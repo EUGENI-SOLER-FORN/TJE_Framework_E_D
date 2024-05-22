@@ -20,3 +20,54 @@ game/world
 game/stage
 	stagemanager
 	playstage
+		render mini mapa 
+			glViewPort(width-size-margin, height-size-margin, size, size)
+			cam.setPerspective(60, 1, 0.1, 100)
+			mYaw.setRotation(camera_yaw,Vector3(0,1,0)
+			eye = current_player->model.getTranslation(), eye.y = 0
+			center = eye
+			vector3 up(0,0,1)
+			cam.lookAt(eye+Vector3(0,15,0), center, up)
+			World::get_instance()->root.render(&cam)
+			glViewPort(0, 0, width, height)
+
+framework/entities/entity_ui
+	struct eButtonId: per saber quins tipus de botons tenim (undefined, play, exit, options…)
+	hereda d'entity mesh
+	2 constructors (size, material) (pos, size, material, eButtonid, name: mesh->createQuad, aplicar shader)
+	Vector2 position, Vector2 size
+	Crear camera 2D a World(view_matrix.setIdentity, setOrtographic)
+	Render
+		igual que render d'entity mesh però passant la camara 2D de World
+		if !3D disable Depth
+		diable Cull, enable blend, blendfunc(gl_src_alpha, gl_one_minus_src_alpha)
+		material shader -> enable
+		world = world:get instance
+		viewproj = camera2D->viewproj
+		set uniforms
+		if (is3D) {_size *= 1 - dist / max_dist Mesh quad; quad.createQuad(position.x, position.y, _size.x, _size.y, true); quad.render(GL_TRIANGLES); }
+	Update3D (per visualitzar millor barra de vida i es mogui)
+		passar position3D de l'enemic com a paràmetre
+		pos3D = position3D
+		width, height = Game::instance->window_width/height
+		visible = true
+		Vector3 pos = world->camera->Project(position3d, width, height)
+		if (pos.z < 0.0f || pos.z > 0.0f) { visible = false)
+		else { pos.y = height - pos.y; position = Vector2(pos.x, pos.y); }
+		
+
+game/menu_stage
+	Constructor: Material background, play, exit (pasar textura, crear entity_ui), background->addChild(play/exit)
+	OnEnter
+	Render (background->render)
+	Update (donar sentit, veure si el mouse està dins del rectangle, donar color i veure si es clica dins (métode onButtonPressed a Stage))
+	
+
+
+
+	
+		
+		
+
+	
+	
