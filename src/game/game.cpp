@@ -87,7 +87,7 @@ void Game::render(void)
 		shader->setUniform("u_time", time);
 
 		// Do the draw call
-		mesh->render( GL_TRIANGLES );
+		// mesh->render( GL_TRIANGLES );
 
 		// Disable shader
 		shader->disable();
