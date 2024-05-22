@@ -1,0 +1,22 @@
+framework/entities/entitymesh
+ 	attributes
+	render mesh
+	mesh lod ?
+
+framework/entities/entityplayer
+	- hereda de entitymesh
+	controls i camera
+	COLLISIONS! i interaccions
+
+framework/entities/entityai ?
+	- hereda de entitymesh
+	provar comportaments de "animals" per menjar (2 estats, moure's i escapar-se ?)
+
+game/world
+	parsescene i crear escenes
+	render world
+	update
+	
+game/stage
+	stagemanager
+	playstage
