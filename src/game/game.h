@@ -7,6 +7,7 @@
 #include "framework/includes.h"
 #include "framework/camera.h"
 #include "framework/utils.h"
+#include "game/stage.h"
 
 class Game
 {
@@ -28,6 +29,7 @@ public:
 	//some vars
 	Camera* camera; //our global camera
 	bool mouse_locked; //tells if the mouse is locked (not seen)
+	StageManager* manager = nullptr;
 
 	Game( int window_width, int window_height, SDL_Window* window );
 

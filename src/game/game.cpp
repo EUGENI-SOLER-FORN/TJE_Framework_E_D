@@ -1,12 +1,13 @@
 #include "game.h"
+#include "framework/input.h"
 #include "framework/utils.h"
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/fbo.h"
 #include "graphics/shader.h"
-#include "framework/input.h"
 
 #include <cmath>
+
 
 //some globals
 Mesh* mesh = NULL;
@@ -30,6 +31,8 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	time = 0.0f;
 	elapsed_time = 0.0f;
 	mouse_locked = false;
+
+	this->manager = new StageManager();
 
 	// OpenGL flags
 	glEnable( GL_CULL_FACE ); //render both sides of every triangle
@@ -70,10 +73,11 @@ void Game::render(void)
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
    
+	this->manager->render();
 	// Create model matrix for cube
 	Matrix44 m;
 	m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
-
+	
 	if(shader)
 	{
 		// Enable shader
@@ -87,7 +91,7 @@ void Game::render(void)
 		shader->setUniform("u_time", time);
 
 		// Do the draw call
-		// mesh->render( GL_TRIANGLES );
+		mesh->render( GL_TRIANGLES );
 
 		// Disable shader
 		shader->disable();
@@ -105,6 +109,8 @@ void Game::render(void)
 
 void Game::update(double seconds_elapsed)
 {
+	
+	this->manager->update((float)seconds_elapsed);
 	float speed = seconds_elapsed * mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
 
 	// Example

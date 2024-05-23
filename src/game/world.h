@@ -1,21 +1,24 @@
 #pragma once
-#include "framework/entities/entity.h"
 #include "framework/entities/entitymesh.h"
+#include <framework/utils.h>
+#include "graphics/material.h"
+#include "graphics/texture.h"
+#include "graphics/shader.h"
+#include <fstream>
+#include <iostream>
 
 class World {
 public:
-	World();
-
+	World(const char* sceneFile);
+	
 	Entity* root;
 	static EntityMesh* sky;
 	
-	static Camera camera;
-	static Camera camera2D;
-
-	bool parseScene();
+	bool parseScene(const char* filename, Entity* root);
+	void loadSky();
 
 	void update(float seconds_elapsed) { World::sky->update(seconds_elapsed); this->root->update(seconds_elapsed); };
-	void render(Camera* camera) { World::sky->render(camera); this->root->render(camera); };
+	void render(Camera* camera);
 
 	void ray_cast() {};
 };
