@@ -15,7 +15,7 @@ EntityUI::EntityUI(const Vector2& position, const Vector2& size, const Material&
 }
 
 bool EntityUI::isHover() {
-    if (this->type == NONE || this->type == BACKGROUND) return false;
+    if (this->type == NONE_BUTTON || this->type == BACKGROUND) return false;
     Vector2 mouse_pos = Input::mouse_position;
     if (this->position.x - this->width/2.f > mouse_pos.x &&
         mouse_pos.y > this->position.y - this->height / 2.f &&
@@ -38,7 +38,7 @@ void EntityUI::render(Camera* camera){
 
     this->material.shader->setUniform("u_model", this->model);
     this->material.shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
-    this->material.shader->setTexture("u_texture", this->material.diffuse);
+    // this->material.shader->setTexture("u_texture", this->material.diffuse);
     
     /*
     if (this->is3D) {

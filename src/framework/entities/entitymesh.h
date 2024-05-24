@@ -7,7 +7,7 @@
 #include "graphics/shader.h"
 
 enum eEntityType {
-	NONE = 0,
+	NONE_TYPE = 0,
 	FLOOR = 1,
 	ENEMY = 2,
 	WALL = 3
@@ -29,7 +29,7 @@ public:
 	Mesh* mesh;
 	Material material;
 
-	eEntityType type = NONE;
+	eEntityType type = NONE_TYPE;
 	
 	// If is instanced we need the array of models to render the mesh
 	bool isVisible = true;

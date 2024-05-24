@@ -50,8 +50,6 @@ public:
 	EntityUI* startbutton;
 
 	void onButtonPressed(eButtonId buttonID) {};
-
-	this->background->render();
 	void render(Camera* camera) override { this->background->render(camera); };
 };
 

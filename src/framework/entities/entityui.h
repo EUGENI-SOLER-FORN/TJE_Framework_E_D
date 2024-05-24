@@ -3,7 +3,7 @@
 #include "framework/includes.h"
 
 enum eButtonId {
-	NONE,
+	NONE_BUTTON,
 	NEXT_BUTTON,
 	EXIT_BUTTON,
 	BACKGROUND,
@@ -16,7 +16,7 @@ public:
 	~EntityUI() {};
 	EntityUI(const Vector2& position, const Vector2& size, const Material& material);
 	
-	eButtonId type = NONE;
+	eButtonId type = NONE_BUTTON;
 	Vector2 position;
 	Texture* regularTexture;
 	Texture* textureOnHover;
