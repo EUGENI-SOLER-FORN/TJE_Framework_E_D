@@ -17,15 +17,20 @@ StageManager::StageManager()
 
 StageManager::~StageManager()
 {
-	delete this->current;
+	for (auto s : this->stages) { delete s.second; }
 }
 
-MenuStage::MenuStage()
-{
+MenuStage::MenuStage(){
+	Material background_material;
+	background_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	background_material.diffuse = Texture::Get("data/textures/background.png");
+	this->background = new EntityUI(Vector2(0.f,0.f) ,Vector2(Game::instance->window_width, Game::instance->window_height), background_material);
+	this->background->setType(BACKGROUND);
 }
 
 MenuStage::~MenuStage()
 {
+
 }
 
 PlayStage::PlayStage(const char* sceneFile)

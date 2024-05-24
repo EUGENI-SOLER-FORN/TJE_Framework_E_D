@@ -1,13 +1,10 @@
 #pragma once
-//#include "framework/entities/entityui.h"
+#include "framework/entities/entityui.h"
 #include "framework/entities/entityplayer.h"
 #include "framework/input.h"
 #include "world.h"
 #include <map>
 #include <string>
-
-class EntityUI;
-enum eButtonID;
 
 class Stage
 {
@@ -52,7 +49,10 @@ public:
 	EntityUI* background;
 	EntityUI* startbutton;
 
-	void onButtonPressed(eButtonID buttonID) {};
+	void onButtonPressed(eButtonId buttonID) {};
+
+	this->background->render();
+	void render(Camera* camera) override { this->background->render(camera); };
 };
 
 class PlayStage : public Stage
