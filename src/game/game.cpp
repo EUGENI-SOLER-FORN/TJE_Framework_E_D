@@ -43,14 +43,14 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	camera->lookAt(Vector3(0.f,100.f, 100.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
 	camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
+	/*
 	// Load one texture using the Texture Manager
 	texture = Texture::Get("data/textures/texture.tga");
-
 	// Example of loading Mesh from Mesh Manager
 	mesh = Mesh::Get("data/meshes/box.ASE");
-
 	// Example of shader loading using the shaders manager
 	shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	*/
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
@@ -73,7 +73,7 @@ void Game::render(void)
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
    
-	this->manager->render();
+	/*
 	// Create model matrix for cube
 	Matrix44 m;
 	m.rotate(angle*DEG2RAD, Vector3(0.0f, 1.0f, 0.0f));
@@ -96,6 +96,8 @@ void Game::render(void)
 		// Disable shader
 		shader->disable();
 	}
+	*/
+	this->manager->render();
 
 	// Draw the floor grid
 	drawGrid();
@@ -109,7 +111,6 @@ void Game::render(void)
 
 void Game::update(double seconds_elapsed)
 {
-	
 	this->manager->update((float)seconds_elapsed);
 	float speed = seconds_elapsed * mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
 
@@ -122,13 +123,6 @@ void Game::update(double seconds_elapsed)
 		camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
 		camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
 	}
-
-	// Async input to move the camera around
-	if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-	if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
 }
 
 //Keyboard event handler (sync input)

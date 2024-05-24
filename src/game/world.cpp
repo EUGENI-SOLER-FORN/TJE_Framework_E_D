@@ -23,7 +23,7 @@ void World::loadSky(){
 		});
 	sky_material.diffuse = sky_texture;
 	
-	World::sky = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), sky_material, "sky");
+	World::sky = new EntityMesh(Mesh::Get("data/meshes/box.ASE"), sky_material, "sky");
 }
 // Code taken from AG:
 bool World::parseScene(const char* filename, Entity* root)
@@ -70,7 +70,7 @@ bool World::parseScene(const char* filename, Entity* root)
 
 		mesh_name = "data/scenes/" + data.first;
 		sRenderData& render_data = data.second;
-
+		
 		// No transforms, nothing to do here
 		if (render_data.models.empty())
 			continue;
@@ -79,16 +79,19 @@ bool World::parseScene(const char* filename, Entity* root)
 		Material mat = render_data.material;
 		EntityMesh* new_entity = nullptr;
 
-		size_t tag = data.first.find("@tag");
+		size_t tag = data.first.find("@wall");
 
 		if (tag != std::string::npos) {
-			Mesh* mesh = Mesh::Get("...");
+			std::cout << data.first << std::endl;
+			Mesh* mesh = Mesh::Get(mesh_name.c_str());
 			// Create a different type of entity
-			// new_entity = new ...
+			new_entity = new EntityMesh(mesh, mat);
+			new_entity->changeVisibility();
 		}
 		else {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
-			mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+			mat.diffuse = Texture::Get("data/textures/colormap.png");
+			mat.shader = Shader::Get("data/shaders/basic.vs", mat.diffuse ? "data/shaders/texture.fs" : "data/shaders/flat.fs");
 			new_entity = new EntityMesh(mesh, mat);
 		}
 
@@ -101,7 +104,7 @@ bool World::parseScene(const char* filename, Entity* root)
 		// Create instanced entity
 		if (render_data.models.size() > 1) {
 			new_entity->isInstanced = true;
-			new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", "data/shaders/texture.fs");
+			new_entity->material.shader = Shader::Get("data/shaders/instanced.vs", new_entity->material.diffuse ? "data/shaders/texture.fs" : "data/shaders/flat.fs");
 			new_entity->models = render_data.models; // Add all instances
 		}
 		// Create normal entity

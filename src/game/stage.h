@@ -1,6 +1,7 @@
 #pragma once
 //#include "framework/entities/entityui.h"
 #include "framework/entities/entityplayer.h"
+#include "framework/input.h"
 #include "world.h"
 #include <map>
 #include <string>
@@ -12,12 +13,15 @@ class Stage
 {
 public:
 	Stage() {};
-	~Stage() {};
+	~Stage() { delete this->stageCamera; };
 
 	virtual void onEnter(Stage* prev_stage) {};
 	virtual void onLeave(Stage* next_stage) {};
 
 	Camera* stageCamera;
+	float camera_yaw = 0.f;
+	float camera_pitch = 0.f;
+	float camera_speed = 10.f;
 
 	virtual void render(Camera* camera) {};
 	virtual void update(float seconds_elapsed) {};
@@ -45,8 +49,6 @@ public:
 	MenuStage();
 	~MenuStage();
 
-	static Camera camera2D;
-
 	EntityUI* background;
 	EntityUI* startbutton;
 
@@ -57,12 +59,14 @@ class PlayStage : public Stage
 {
 public:
 	PlayStage(const char* sceneFile);
-	~PlayStage();
+	~PlayStage() { delete this->scene; };
 
 	static EntityPlayer* player;
-
+	
 	World* scene;
+	void updateSceneCamera(float seconds_elapsed);
 
-	void render(Camera* camera) { this->scene->render(camera); };// PlayStage::player->render(camera); };
-	void update(float seconds_elapsed) { this->scene->update(seconds_elapsed); };// PlayStage::player->update(seconds_elapsed); };
+
+	void render(Camera* camera) override { this->scene->render(camera); PlayStage::player->render(camera); };
+	void update(float seconds_elapsed) override { this->scene->update(seconds_elapsed); PlayStage::player->update(seconds_elapsed); this->updateSceneCamera(seconds_elapsed); };
 };

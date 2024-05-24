@@ -15,7 +15,12 @@ enum eEntityType {
 
 class EntityMesh : public Entity {
 public:
-	EntityMesh(Mesh* mesh, Material material, const std::string& name = "") : Entity() {
+	EntityMesh() {
+		this->mesh = new Mesh();
+		this->material = Material();
+		this->name = "emptymesh";
+	}
+	EntityMesh(Mesh* mesh, Material& material, const std::string& name = "") : Entity() {
 		this->mesh = mesh;
 		this->material = material;
 		this->name = name;
@@ -35,5 +40,5 @@ public:
 	void changeVisibility() { this->isVisible = !this->isVisible; };
 
 	void render(Camera* camera);
-	void update(float seconds_elapsed) {};
+	void update(float seconds_elapsed) { for (int i = 0; i < this->children.size(); ++i) this->children[i]->update(seconds_elapsed); };
 };

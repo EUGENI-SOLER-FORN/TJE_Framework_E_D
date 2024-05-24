@@ -1,11 +1,11 @@
 framework/entities/entitymesh
- 	attributes
-	render mesh
+ 	✅attributes
+	✅render mesh
 	mesh lod ?
 
 framework/entities/entityplayer
 	- hereda de entitymesh
-	controls i camera
+	✅controls i camera
 	COLLISIONS! i interaccions
 
 framework/entities/entityai ?
@@ -13,16 +13,15 @@ framework/entities/entityai ?
 	provar comportaments de "animals" per menjar (2 estats, moure's i escapar-se ?)
 
 game/world
-	parsescene i crear escenes
-	render world
-	update
+	✅parsescene i crear escenes
+	✅render world
+	✅update
 	
 game/stage
-	stagemanager
-	playstage
-<<<<<<< HEAD
-=======
-		render mini mapa 
+	✅stagemanager
+	✅playstage
+
+/// render mini mapa 
 			glViewPort(width-size-margin, height-size-margin, size, size)
 			cam.setPerspective(60, 1, 0.1, 100)
 			mYaw.setRotation(camera_yaw,Vector3(0,1,0)
@@ -63,14 +62,3 @@ game/menu_stage
 	OnEnter
 	Render (background->render)
 	Update (donar sentit, veure si el mouse està dins del rectangle, donar color i veure si es clica dins (métode onButtonPressed a Stage))
-	
-
-
-
-	
-		
-		
-
-	
-	
->>>>>>> 1512cd507de7864c53b9191781ed20d5ad48dc82
