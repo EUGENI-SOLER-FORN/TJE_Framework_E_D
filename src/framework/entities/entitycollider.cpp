@@ -10,7 +10,7 @@ bool EntityCollider::checkPlayerCollisions(const Vector3& target_pos, std::vecto
 	float sphereRadius = 1.0f;
 
 	// TESTING RAY COLLISION 
-	if (mesh->testRayCollision(this->model, target_pos, Vector3(0.0f, -1.0f, 0.0f), col_point, col_normal, max_ray_dist, false)) {
+	if (mesh->testRayCollision(model, target_pos, Vector3(0.0f, -1.0f, 0.0f), col_point, col_normal, max_ray_dist, false)) {
 		collisions.push_back({ col_point, col_normal.normalize() });
 		std::cout << "Ray Collision!" << std::endl;
 		return true;

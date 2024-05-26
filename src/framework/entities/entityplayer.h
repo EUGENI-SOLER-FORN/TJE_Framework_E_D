@@ -26,6 +26,6 @@ public:
 	void sleep() { this->player_sleepiness = std::min(100.0f, this->player_sleepiness + 50.0f); }
 
 	// update and render methods
-	void update(float seconds_elapsed) override;
-	void render(Camera* camera) override {};
+	void update(float seconds_elapsed);
+	void render(Camera* camera);
 };

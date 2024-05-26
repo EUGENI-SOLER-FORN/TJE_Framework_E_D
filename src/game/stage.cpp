@@ -2,6 +2,7 @@
 #include "stage.h"
 #include "game/game.h"
 
+PlayStage* PlayStage::current_stage = nullptr;
 EntityPlayer* PlayStage::player = nullptr;
 
 StageManager::StageManager()
@@ -35,13 +36,16 @@ MenuStage::~MenuStage()
 
 PlayStage::PlayStage(const char* sceneFile)
 {
+	PlayStage::current_stage = this;
+
 	this->scene = new World(sceneFile);
+	this->stageCamera = new Camera();
 
 	int height = Game::instance->window_height;
 	int width = Game::instance->window_width;
-	this->stageCamera = new Camera();
 	Vector3 camera_eye = Vector3(1.0f);
 	Vector3 camera_center = Vector3(0.0f);
+
 	this->stageCamera->lookAt(camera_eye, camera_center, Vector3::UP);
 	this->stageCamera->setPerspective(60.f, width / (float)height, 0.01f, 1000.f); 
 }

@@ -59,11 +59,11 @@ public:
 	PlayStage(const char* sceneFile);
 	~PlayStage() { delete this->scene; };
 
+	static PlayStage* current_stage;
 	static EntityPlayer* player;
 	
 	World* scene;
 	void updateSceneCamera(float seconds_elapsed);
-
 
 	void render(Camera* camera) override { this->scene->render(camera); PlayStage::player->render(camera); };
 	void update(float seconds_elapsed) override { this->scene->update(seconds_elapsed); PlayStage::player->update(seconds_elapsed); this->updateSceneCamera(seconds_elapsed); };
