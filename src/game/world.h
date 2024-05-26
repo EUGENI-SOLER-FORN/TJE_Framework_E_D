@@ -8,7 +8,9 @@
 #include <iostream>
 
 class World {
+
 public:
+
 	World(const char* sceneFile);
 	
 	Entity* root;
@@ -21,6 +23,5 @@ public:
 	void render(Camera* camera);
 
 	void ray_cast() {};
+
 };
-
-

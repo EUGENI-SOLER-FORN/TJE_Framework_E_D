@@ -5,11 +5,6 @@
 class EntityPlayer : public EntityMesh {
 public:
 
-	struct sCollisionData {
-		Vector3 colPoint;
-		Vector3 colNormal;
-	};
-
 	// constructor methods
 	EntityPlayer() : EntityMesh() { this->name = "player"; this->model = Matrix44::IDENTITY; };
 	~EntityPlayer() {};
@@ -20,8 +15,8 @@ public:
 
 	// stats of the player
 	float player_speed = 0.01f;
-	float player_hunger = 0.f;
-	float player_sleepiness = 0.f;
+	float player_hunger = 100.0f;
+	float player_sleepiness = 100.0f;
 	
 	// helper method
 	Vector3 position() { return this->model.getTranslation(); };
@@ -33,7 +28,4 @@ public:
 	// update and render methods
 	void update(float seconds_elapsed) override;
 	void render(Camera* camera) override {};
-
-	// methods to manage collisions
-	// bool checkPlayerCollisions(const Vector3& target_pos, std::vector<sCollisionData>& collisions);
 };

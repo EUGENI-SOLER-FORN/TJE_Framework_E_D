@@ -1,22 +1,47 @@
 #pragma once
 #include "entityplayer.h"
+#include "entitycollider.h"
+#include "game/stage.h"
+
 
 void EntityPlayer::update(float seconds_elapsed)
 {
 	float moving_speed = this->player_speed;
 	const Vector3& player_front = this->model.frontVector().normalize();
 	const Vector3& player_right = this->model.rightVector().normalize();
+	Vector3 current_position = this->model.getTranslation();
+	Vector3 next_position = current_position;
 
 	// Code adapted from Camera controls given in the framework skeleton
-	// Run with shift
-	if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) moving_speed *= 10;
-	
+	if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) moving_speed *= 10.0f;
 	if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) this->model.translate(- player_front * moving_speed);
 	if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) this->model.translate( player_front * moving_speed);
 	if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) this->model.translate( - player_right * moving_speed);
 	if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) this->model.translate(player_right * moving_speed);
 
-	//TODO: Manage all related with collisions
+	// Checking collisions
+	/*std::vector<sCollisionData> collisions;
+	for(auto e : current_world)
+		EntityCollider* ec = dynamic_cast<EntityCollider*>(e);
+		if (ec) {
+			ec->checkPlayerCollisions(next_position, collisions);
+		}
+	}
+
+	// Manejo de colisiones
+	if (!collisions.empty()) {
+		for (const auto& collision : collisions) {
+			if (collision.is_collided) {
+				Vector3 collisionNormal = collision.colNormal;
+				Vector3 velocity = next_position - current_position;
+				Vector3 newDir = velocity - 2 * velocity.dot(collisionNormal) * collisionNormal;
+				next_position = current_position + newDir * moving_speed;
+			}
+		}
+	}
+
+	// Actualizar la posición del modelo del jugador
+	this->model.setTranslation(next_position);*/
 }
 
 void EntityPlayer::render(Camera* camera)
@@ -45,24 +70,4 @@ void EntityPlayer::render(Camera* camera)
 
 	// Disable shader
 	shader->disable();
-
-	//TODO: Try to render sphere for collisions
 }
-
-/*bool checkPlayerCollisions(const Vector3& target_pos,
-	std::vector<sCollisionData>& collisions) {
-	Vector3 center = target_pos + Vector3(0.f, 1.25f, 0.f);
-	float sphereRadius = 0.75f;
-	Vector3 colPoint, colNormal;
-	// For each collider entity “e” in root:
-	Mesh* mesh = e->mesh;
-	if (mesh->testSphereCollision(e->model, center,
-		sphereRadius, colPoint, colNormal)) {
-		collisions.push_back({ colPoint,
-		colNormal.normalize() });
-	}
-	// End loop
-	return !collisions.empty();
-}*/
-
-
