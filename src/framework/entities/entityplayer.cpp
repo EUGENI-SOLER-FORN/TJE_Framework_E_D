@@ -1,6 +1,6 @@
 #pragma once
 #include "entityplayer.h"
-#include "entitycollider.h"
+#include "framework/entities/entitycollider.h"
 #include "game/stage.h"
 
 
@@ -9,7 +9,7 @@ void EntityPlayer::update(float seconds_elapsed)
 	float moving_speed = this->player_speed;
 	const Vector3& player_front = this->model.frontVector().normalize();
 	const Vector3& player_right = this->model.rightVector().normalize();
-	Vector3 current_position = this->model.getTranslation();
+	Vector3 current_position = this->position();
 	Vector3 next_position = current_position;
 
 	// Code adapted from Camera controls given in the framework skeleton

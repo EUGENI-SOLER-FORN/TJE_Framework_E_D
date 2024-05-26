@@ -25,6 +25,8 @@ public:
 		this->material = material;
 		this->name = name;
 	};
+	// helper method
+	Vector3 position() { return this->model.getTranslation(); };
 
 	Mesh* mesh;
 	Material material;

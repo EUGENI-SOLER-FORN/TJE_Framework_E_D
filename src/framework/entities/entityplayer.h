@@ -18,9 +18,6 @@ public:
 	float player_hunger = 100.0f;
 	float player_sleepiness = 100.0f;
 	
-	// helper method
-	Vector3 position() { return this->model.getTranslation(); };
-
 	// methods to manage hunger and sleep
 	void hunger() { this->player_hunger = std::min(100.0f, this->player_hunger + 50.0f); }
 	void sleep() { this->player_sleepiness = std::min(100.0f, this->player_sleepiness + 50.0f); }
