@@ -1,6 +1,6 @@
 #pragma once
 #include "entityplayer.h"
-#include "entitycollider.h"
+#include "framework/entities/entitycollider.h"
 #include "game/stage.h"
 
 void EntityPlayer::update(float seconds_elapsed)
