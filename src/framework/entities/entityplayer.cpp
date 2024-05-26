@@ -49,9 +49,9 @@ void EntityPlayer::update(float seconds_elapsed)
 			}
 		}
 	}
-	*/
 	// Actualizar la posición del modelo del jugador
 	this->model.translate(possible_position);
+	*/
 }
 
 void EntityPlayer::render(Camera* camera)

@@ -2,7 +2,7 @@
 
 void EntityAI::update(float seconds_elapsed) {
 	float moving_speed = this->speed;
-	const Vector3 current_position = this->position;
+	const Vector3 current_position = this->position();
 	Vector3 moving_direction = this->direction;
 
 	/*
@@ -19,7 +19,7 @@ void EntityAI::update(float seconds_elapsed) {
 	}
 
 	const Vector3 next_position = current_position + moving_direction * moving_speed * seconds_elapsed;
-	this->position = next_position;
+	this->enemy_position = next_position;
 	double angle = acos( this->direction.dot(moving_direction) );
 
 	this->model.setTranslation(next_position);
