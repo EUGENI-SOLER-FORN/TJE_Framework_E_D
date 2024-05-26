@@ -65,13 +65,12 @@ void PlayStage::updateSceneCamera(float seconds_elapsed){
 	Matrix44 matrix_yaw, matrix_pitch;
 	matrix_yaw.setRotation(this->camera_yaw, Vector3::UP);
 	matrix_pitch.setRotation(this->camera_pitch, Vector3(-1, 0, 0));
-	const Vector3 new_front = (matrix_pitch * matrix_yaw).frontVector();
-	
-	const Vector3& player_offset = Vector3(0.f);
-	
-	const Vector3 new_eye = PlayStage::player->position() + player_offset - new_front / new_front.length() * 2.0f;;
-	const Vector3 new_center = new_eye + new_front;
+	const Vector3& new_front = (matrix_pitch * matrix_yaw).frontVector();
 
+	const Vector3& player_offset = Vector3(0.f);	
+	const Vector3& new_eye = PlayStage::player->position + player_offset - new_front / new_front.length() * 2.0f;;
+	const Vector3& new_center = new_eye + new_front;
 
 	this->stageCamera->lookAt(new_eye, new_center, Vector3::UP);
+	this->player->model.setRotation(camera_yaw, Vector3::UP);
 }

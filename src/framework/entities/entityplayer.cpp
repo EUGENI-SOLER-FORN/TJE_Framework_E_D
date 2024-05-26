@@ -6,18 +6,22 @@
 
 void EntityPlayer::update(float seconds_elapsed)
 {
+	// Update sleep and stamina
+	this->player_sleepiness -= 0.15 * seconds_elapsed;
+	this->player_hunger -= 0.15 * seconds_elapsed;
+
 	float moving_speed = this->player_speed;
 	const Vector3& player_front = this->model.frontVector().normalize();
 	const Vector3& player_right = this->model.rightVector().normalize();
-	Vector3 current_position = this->position();
+	Vector3 current_position = this->position;
 	Vector3 next_position = current_position;
 
 	// Code adapted from Camera controls given in the framework skeleton
 	if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) moving_speed *= 10.0f;
-	if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) this->model.translate(- player_front * moving_speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) this->model.translate( player_front * moving_speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) this->model.translate( - player_right * moving_speed);
-	if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) this->model.translate(player_right * moving_speed);
+	if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))  this->position += player_front * moving_speed;
+	if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) this->position -= player_front * moving_speed;
+	if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) this->position += player_right * moving_speed;
+	if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) this->position -= player_right * moving_speed;
 
 	// Checking collisions
 	/*std::vector<sCollisionData> collisions;
@@ -39,21 +43,20 @@ void EntityPlayer::update(float seconds_elapsed)
 			}
 		}
 	}
-
+	*/
 	// Actualizar la posición del modelo del jugador
-	this->model.setTranslation(next_position);*/
+	this->model.translate(next_position);
 }
 
 void EntityPlayer::render(Camera* camera)
 {
-	
-	// Render mesh
-	EntityMesh::render(camera);
+	// Render mesh (not necessary, since it's first person)
+	//EntityMesh::render(camera);
 
 	// Load shaders and mesh, get model matrix and enable shader
-	Shader* shader = Shader::Get("basic.vs", "flat.fs");
+	Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
 	Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
-	Matrix44 m = model;
+	Matrix44 m = this->model;
 	shader->enable();
 
 	// Do translation and scaling transformations
