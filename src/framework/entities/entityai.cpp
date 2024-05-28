@@ -1,3 +1,4 @@
+#pragma once
 #include "entityai.h"
 
 void EntityAI::update(float seconds_elapsed) {
