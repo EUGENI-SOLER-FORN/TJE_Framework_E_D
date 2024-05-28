@@ -1,7 +1,16 @@
 #pragma once
 #include "entityplayer.h"
-#include "framework/entities/entitycollider.h"
-#include "game/stage.h"
+#include "game/game.h"
+
+EntityPlayer::EntityPlayer() : EntityMesh(){
+	this->name = "player";
+	this->model = Matrix44::IDENTITY;
+	this->inventory = new Inventory();
+
+	this->inventory_camera = new Camera();
+	this->inventory_camera->view_matrix = Matrix44();
+	this->inventory_camera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
+}
 
 void EntityPlayer::update(float seconds_elapsed)
 {
@@ -64,4 +73,6 @@ void EntityPlayer::render(Camera* camera)
 
 	// Disable shader
 	shader->disable();
+
+	this->inventory->render(this->inventory_camera);
 }

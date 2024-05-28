@@ -61,8 +61,8 @@ void PlayStage::updateSceneCamera(float seconds_elapsed){
 	
 	// Code seen in theory class
 	// Get yaw and pitch (rotations in Z and Y axis) from mouse input and camera speed
-	this->camera_yaw -= Input::mouse_delta.x * this->camera_speed * seconds_elapsed;
-	this->camera_pitch -= Input::mouse_delta.y * this->camera_speed * seconds_elapsed;
+	this->camera_yaw -= Input::mouse_delta.x * this->camera_speed * seconds_elapsed * 0.5;
+	this->camera_pitch -= Input::mouse_delta.y * this->camera_speed * seconds_elapsed * 0.5;
 	// clamp pitch so you don't do a full rotation
 	this->camera_pitch = clamp(this->camera_pitch, -M_PI * 0.4f, M_PI * 0.4f);
 	// Create rotation matrice sand combine with product
@@ -79,4 +79,15 @@ void PlayStage::updateSceneCamera(float seconds_elapsed){
 	
 	float angle = PlayStage::player->model.getYawRotationToAimTo(new_center);
 	this->player->model.rotate(angle, Vector3::UP);
+}
+
+void PlayStage::render(Camera* camera){
+	this->scene->render(camera); 
+	PlayStage::player->render(camera);
+}
+
+void PlayStage::update(float seconds_elapsed){
+	this->scene->update(seconds_elapsed); 
+	PlayStage::player->update(seconds_elapsed); 
+	this->updateSceneCamera(seconds_elapsed);
 }
