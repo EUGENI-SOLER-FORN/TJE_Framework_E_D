@@ -1,6 +1,7 @@
 #include "game.h"
 #include "framework/input.h"
 #include "framework/utils.h"
+#include "framework/audio.h"
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/fbo.h"
@@ -100,7 +101,7 @@ void Game::render(void)
 	this->manager->render();
 
 	// Draw the floor grid
-	drawGrid();
+	// drawGrid();
 
 	// Render the FPS, Draw Calls, etc
 	drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);

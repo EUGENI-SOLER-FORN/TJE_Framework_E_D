@@ -2,6 +2,7 @@
 #include "framework/entities/entityui.h"
 #include "framework/entities/entityplayer.h"
 #include "framework/input.h"
+#include "framework/audio.h"
 #include "world.h"
 #include <map>
 #include <string>
@@ -12,7 +13,12 @@ public:
 	Stage() {};
 	~Stage() { delete this->stageCamera; };
 
-	virtual void onEnter(Stage* prev_stage) {};
+	virtual void onEnter(Stage* prev_stage) {
+		Audio* game_audio;
+		game_audio->Init();
+		game_audio->Get("data/audio/island_audio.wav");
+		game_audio->Play("data/audio/island_audio.wav", 0.5, true);
+	};
 	virtual void onLeave(Stage* next_stage) {};
 
 	Camera* stageCamera;

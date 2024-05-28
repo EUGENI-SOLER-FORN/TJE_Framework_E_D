@@ -23,7 +23,7 @@ void EntityPlayer::update(float seconds_elapsed)
 	if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) this->model.translate(player_right * moving_speed);
 	Vector3 possible_position = position();
 
-	/*
+	
 	// Check and manage possible collisions
 	World* current_world = PlayStage::current_stage->scene;
 	std::vector<sCollisionData> collisions;
@@ -37,21 +37,7 @@ void EntityPlayer::update(float seconds_elapsed)
 			this->model.setTranslation(possible_position);
 		}
 	}
-
-	// Manejo de colisiones
-	if (!collisions.empty()) {
-		for (const auto& collision : collisions) {
-			if (collision.is_collided) {
-				Vector3 collisionNormal = collision.colNormal;
-				Vector3 velocity = next_position - current_position;
-				Vector3 newDir = velocity - 2 * velocity.dot(collisionNormal) * collisionNormal;
-				next_position = current_position + newDir * moving_speed;
-			}
-		}
-	}
-	// Actualizar la posición del modelo del jugador
-	this->model.translate(possible_position);
-	*/
+	
 }
 
 void EntityPlayer::render(Camera* camera)

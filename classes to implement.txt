@@ -21,7 +21,8 @@ game/stage
 	✅stagemanager
 	✅playstage
 
-/// render mini mapa 
+22/05
+	render mini mapa 
 			glViewPort(width-size-margin, height-size-margin, size, size)
 			cam.setPerspective(60, 1, 0.1, 100)
 			mYaw.setRotation(camera_yaw,Vector3(0,1,0)
@@ -62,3 +63,7 @@ game/menu_stage
 	OnEnter
 	Render (background->render)
 	Update (donar sentit, veure si el mouse està dins del rectangle, donar color i veure si es clica dins (métode onButtonPressed a Stage))
+
+
+28/05
+Audio
