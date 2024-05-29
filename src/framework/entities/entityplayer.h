@@ -15,11 +15,12 @@ public:
 	};
 	
 	// general attributes
-	float player_height = 1.0f;
-	float sphere_radius = .5f;
+	const Vector3 player_height = Vector3(0.f, 1.0f, 0.f);
+	const float sphere_radius = .25f;
 
 	// stats of the player
-	float player_speed = 0.01f;
+	const float player_speed = 3.f;
+	Vector3 velocity;
 	float player_hunger = 100.0f;
 	float player_sleepiness = 100.0f;
 	

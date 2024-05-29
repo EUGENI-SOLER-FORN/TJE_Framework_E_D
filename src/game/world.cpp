@@ -85,14 +85,15 @@ bool World::parseScene(const char* filename, Entity* root)
 			std::cout << data.first << std::endl;
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
 			// Create a different type of entity
-			new_entity = new EntityMesh(mesh, mat);
+			new_entity = new EntityCollider(mesh, mat);
 			new_entity->changeVisibility();
 		}
 		else {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
 			mat.diffuse = Texture::Get("data/textures/colormap.png");
+			mat.color = mat.diffuse ? Vector4(0.9f, 0.9f, 0.9f, 1.0f) : Vector4(0.0f);
 			mat.shader = Shader::Get("data/shaders/basic.vs", mat.diffuse ? "data/shaders/texture.fs" : "data/shaders/flat.fs");
-			new_entity = new EntityMesh(mesh, mat);
+			new_entity = new EntityCollider(mesh, mat);
 		}
 
 		if (!new_entity) {

@@ -1,5 +1,5 @@
 #pragma once
-#include "framework/entities/entitymesh.h"
+#include "framework/entities/entitycollider.h"
 #include "framework/utils.h"
 #include "graphics/material.h"
 #include "graphics/texture.h"

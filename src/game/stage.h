@@ -23,7 +23,7 @@ public:
 	Camera* stageCamera;
 	float camera_yaw = 0.f;
 	float camera_pitch = 0.f;
-	float camera_speed = 10.f;
+	float camera_speed = 1.f;
 
 	virtual void render(Camera* camera) {};
 	virtual void update(float seconds_elapsed) {};
@@ -40,7 +40,7 @@ public:
 
 	void goTo(const std::string stageName) { Stage* next_stage = this->stages[stageName]; this->goTo(next_stage); };
 	void goTo(Stage* next_stage) { if (next_stage == nullptr) return; next_stage->onEnter(this->current); this->current->onLeave(next_stage); this->current = next_stage; };
-
+	
 	void render() { this->current->render(this->current->stageCamera); };
 	void update(float seconds_elapsed) { this->current->update(seconds_elapsed); };
 };
