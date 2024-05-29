@@ -71,16 +71,14 @@ public:
 
 class MiniMap {
 public:
-	MiniMap() {
-		if (!MiniMap::minimapCamera) {
-			MiniMap::minimapCamera = new Camera();
-			MiniMap::minimapCamera->setPerspective(60.f, 1.f, 0.1f, 100.f);
-		}
-	}
+	MiniMap();
+	
 	static Camera* minimapCamera;
 	
-	const Vector2& minimap_size = Vector2(40.f);
-	const int& margin = 10;
+	EntityUI* background;
+	const Vector2& minimap_size = Vector2(96.f);
+	const int& margin = 20;
+	const Vector3& cameraheight = Vector3(0.f, 5.f, 0.f);
 
 	void render();
 };

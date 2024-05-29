@@ -65,15 +65,12 @@ void EntityPlayer::render(Camera* camera)
 	// Do translation and scaling transformations
 	m.translate(0.0f, player_height, 0.0f);
 	m.scale(sphere_radius, sphere_radius, sphere_radius);
-
 	// Set basic uniforms values
 	shader->setUniform("u_color", Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 	shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
 	shader->setUniform("u_model", m);
-
 	// Render mesh
 	mesh->render(GL_LINES);
-
 	// Disable shader
 	shader->disable();
 

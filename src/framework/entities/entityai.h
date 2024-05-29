@@ -2,7 +2,7 @@
 #include "framework/entities/entitycollider.h"
 #include "game/stage.h"
 
-enum eState{ IDLE, HIT, STATE_NUM };
+enum eState{ IDLE, HIT, REST, STATE_NUM };
 class EntityAI : public EntityCollider{
 public:
 	EntityAI(Mesh* mesh, Material& material) : EntityCollider(mesh, material) { this->type = ENEMY; };
