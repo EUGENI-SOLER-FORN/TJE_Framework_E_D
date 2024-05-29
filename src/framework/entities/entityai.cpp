@@ -11,7 +11,7 @@ void EntityAI::update(float seconds_elapsed) {
 	*/
 	
 	if (this->state == IDLE) {
-		moving_direction = .9*this->direction + .1*Vector3(random(1.f) * 2-1, random(1.f) * 2 - 1, random(1.f) * 2 - 1);
+		moving_direction = .9f*this->direction + .1f*Vector3(random(1.f) * 2-1, random(1.f) * 2 - 1, random(1.f) * 2 - 1);
 	}
 	else if (this->state = HIT) {
 		// If hit, scape from player

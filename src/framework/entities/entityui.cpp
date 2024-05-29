@@ -1,6 +1,8 @@
 #pragma once
 #include "entityui.h"
 #include "game/game.h"
+Camera* MiniMap::minimapCamera = nullptr;
+
 EntityUI::EntityUI(const Vector2& position, const Vector2& size, const Material& material) {
     this->position = position;
     this->width = size.x;
@@ -70,7 +72,7 @@ Inventory::Inventory(){
     Vector2 p;
     float window_width = (float)Game::instance->window_width;
 
-    p = Vector2(window_width / 2.f, 0) + Vector2(0.5 * background_size.x, 0.5 * background_size.y);
+    p = Vector2(window_width / 2.f, 0.f) + Vector2(0.5f*background_size.x, 0.5f*background_size.y);
     mat.diffuse = Texture::Get("data/textures/inventory/hud.png");
     mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
     this->background = new EntityUI(p, background_size, mat);
@@ -83,4 +85,39 @@ Inventory::Inventory(){
     p = p + Vector2(12.0f, 0.0f);
     mat.diffuse = Texture::Get("data/textures/inventory/meat.png");
     this->imgs.push_back(new EntityUI(p, img_size, mat));
+}
+
+
+PointCross::PointCross()
+{
+    const Vector2& screen_center = Vector2(0.5f * (float)Game::instance->window_width, 0.5f * (float)Game::instance->window_height);
+    Material cross_mat;
+    cross_mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+    cross_mat.diffuse = Texture::Get("data/textures/pointcross/cross.png");
+    this->cross = new EntityUI(screen_center - this->cross_size, this->cross_size, cross_mat);
+}
+
+// Code seen in theory class
+void MiniMap::render(){
+    const Vector2& size = Vector2((float)Game::instance->window_width, (float)Game::instance->window_width);
+    glViewport( (GLint)(size.x - minimap_size.x - margin), (GLint)(size.y - minimap_size.y - margin), (GLsizei)minimap_size.x, (GLsizei)minimap_size.y);
+    /*
+    Matrix44 myaw;
+    myaw.setRotation(camera_yaw, Vector(0, 1, 0))
+    */    
+    // rotate the 
+    Vector3 eye = PlayStage::player->position();
+    eye.y = 0.0f;
+    
+    const Vector3& center = eye;
+    const Vector3& new_up = Vector3(0.f, 0.f, 1.f);
+    const Vector3& cameraheight = Vector3(0.f, 15.f, 0.f);
+    MiniMap::minimapCamera->lookAt(eye + cameraheight, center, new_up);
+    
+    PlayStage* ps = dynamic_cast<PlayStage*>(Game::instance->manager->current);
+    if (!ps) return;
+    ps->scene->root->render(MiniMap::minimapCamera);
+
+    // reset el viewport
+    glViewport(0,0, (GLsizei)size.x, (GLsizei)size.y);
 }

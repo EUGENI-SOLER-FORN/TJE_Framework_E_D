@@ -7,7 +7,12 @@ class EntityPlayer : public EntityMesh {
 public:
 	// constructor methods
 	EntityPlayer();
-	~EntityPlayer() {};
+	~EntityPlayer() { 
+		delete player_camera2D;
+		delete point;
+		delete inventory;
+		delete minimap;
+	};
 	
 	// general attributes
 	float player_height = 1.0f;
@@ -17,9 +22,12 @@ public:
 	float player_speed = 0.01f;
 	float player_hunger = 100.0f;
 	float player_sleepiness = 100.0f;
-	EntityUI* point;
-	Camera* inventory_camera;
+	
+	// 2D HUD and minimap
+	Camera* player_camera2D;
+	PointCross* point;
 	Inventory* inventory;
+	MiniMap* minimap;
 
 	// methods to manage hunger and sleep
 	void eat() { this->player_hunger = std::min(100.0f, this->player_hunger + 20.0f); }

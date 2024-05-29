@@ -5,18 +5,21 @@
 EntityPlayer::EntityPlayer() : EntityMesh(){
 	this->name = "player";
 	this->model = Matrix44::IDENTITY;
+	
 	this->inventory = new Inventory();
-
-	this->inventory_camera = new Camera();
-	this->inventory_camera->view_matrix = Matrix44();
-	this->inventory_camera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
+	this->point = new PointCross();
+	this->minimap = new MiniMap();
+	
+	this->player_camera2D = new Camera();
+	this->player_camera2D->view_matrix = Matrix44();
+	this->player_camera2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
 }
 
 void EntityPlayer::update(float seconds_elapsed)
 {
 	// Update sleep and stamina
-	this->player_sleepiness -= 0.15 * seconds_elapsed;
-	this->player_hunger -= 0.15 * seconds_elapsed;
+	this->player_sleepiness -= 0.15f * seconds_elapsed;
+	this->player_hunger -= 0.15f * seconds_elapsed;
 
 	// Set some variables
 	float moving_speed = this->player_speed;
@@ -74,5 +77,7 @@ void EntityPlayer::render(Camera* camera)
 	// Disable shader
 	shader->disable();
 
-	this->inventory->render(this->inventory_camera);
+	this->inventory->render(this->player_camera2D);
+	this->point->render(this->player_camera2D);
+	this->minimap->render();
 }

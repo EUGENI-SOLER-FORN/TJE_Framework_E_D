@@ -60,3 +60,27 @@ public:
 	void add(eInventoryElements i) { this->elements[i] += 1; };
 	void substract(eInventoryElements i) { if(this->elements[i]) this->elements[i] -= 1; };
 };
+
+class PointCross {
+public:
+	PointCross();
+	EntityUI* cross;
+	const Vector2& cross_size = Vector2(30.f);
+	void render(Camera* camera) { this->cross->render(camera); };
+};
+
+class MiniMap {
+public:
+	MiniMap() {
+		if (!MiniMap::minimapCamera) {
+			MiniMap::minimapCamera = new Camera();
+			MiniMap::minimapCamera->setPerspective(60.f, 1.f, 0.1f, 100.f);
+		}
+	}
+	static Camera* minimapCamera;
+	
+	const Vector2& minimap_size = Vector2(40.f);
+	const int& margin = 10;
+
+	void render();
+};

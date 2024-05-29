@@ -25,7 +25,7 @@ MenuStage::MenuStage(){
 	Material background_material;
 	background_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 	background_material.diffuse = Texture::Get("data/textures/background.png");
-	this->background = new EntityUI(Vector2(0.f,0.f) ,Vector2(Game::instance->window_width, Game::instance->window_height), background_material);
+	this->background = new EntityUI(Vector2(0.f,0.f) ,Vector2((float)Game::instance->window_width, (float)Game::instance->window_height), background_material);
 	this->background->setType(BACKGROUND);
 }
 
@@ -61,8 +61,8 @@ void PlayStage::updateSceneCamera(float seconds_elapsed){
 	
 	// Code seen in theory class
 	// Get yaw and pitch (rotations in Z and Y axis) from mouse input and camera speed
-	this->camera_yaw -= Input::mouse_delta.x * this->camera_speed * seconds_elapsed * 0.5;
-	this->camera_pitch -= Input::mouse_delta.y * this->camera_speed * seconds_elapsed * 0.5;
+	this->camera_yaw -= Input::mouse_delta.x * this->camera_speed * seconds_elapsed * 0.5f;
+	this->camera_pitch -= Input::mouse_delta.y * this->camera_speed * seconds_elapsed * 0.5f;
 	// clamp pitch so you don't do a full rotation
 	this->camera_pitch = clamp(this->camera_pitch, -M_PI * 0.4f, M_PI * 0.4f);
 	// Create rotation matrice sand combine with product

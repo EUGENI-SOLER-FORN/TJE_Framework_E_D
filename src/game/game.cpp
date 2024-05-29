@@ -113,10 +113,10 @@ void Game::render(void)
 void Game::update(double seconds_elapsed)
 {
 	this->manager->update((float)seconds_elapsed);
-	float speed = seconds_elapsed * mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
+	//float speed = seconds_elapsed * mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
 
 	// Example
-	angle += (float)seconds_elapsed * 10.0f;
+	//angle += (float)seconds_elapsed * 10.0f;
 
 	// Mouse input to rotate the cam
 	if (Input::isMousePressed(SDL_BUTTON_LEFT) || mouse_locked) //is left button pressed?
