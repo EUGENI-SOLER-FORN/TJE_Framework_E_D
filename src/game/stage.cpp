@@ -11,8 +11,10 @@ StageManager::StageManager()
 	this->stages["beach_scene"] = new PlayStage("data/scenes/beach_scene.scene");
 	this->stages["cross_scene"] = new PlayStage("data/scenes/cross_scene.scene");
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
-	this->current = this->stages["beach_scene"];
-	this->goTo("island_scene");
+
+	this->current = this->stages["menu_principal"];
+	this->goTo("menu_principal");
+
 	PlayStage::current_stage = (PlayStage*)StageManager::current;
 	PlayStage::player = new EntityPlayer();
 }
@@ -29,8 +31,8 @@ MenuStage::MenuStage(){
 	this->background->setType(BACKGROUND);
 }
 
-MenuStage::~MenuStage(){
-
+void MenuStage::update(float seconds_elapsed) {
+	// donar sentit, veure si el mouse està dins del rectangle, donar color i veure si es clica dins 
 }
 
 PlayStage::PlayStage(const char* sceneFile)

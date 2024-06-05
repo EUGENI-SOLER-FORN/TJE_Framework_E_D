@@ -65,5 +65,15 @@ game/menu_stage
 	Update (donar sentit, veure si el mouse està dins del rectangle, donar color i veure si es clica dins (métode onButtonPressed a Stage))
 
 
+EXTRA LECTURES
 28/05
 Audio
+
+29/05
+Improving graphics
+
+04/06
+Physics
+
+05/06
+Particles
