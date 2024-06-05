@@ -17,5 +17,5 @@ public:
 
 	EntityCollider(Mesh* mesh, Material& material) : EntityMesh(mesh, material) { this->layer = FLOOR; this->name = "Floor"; };
 
-	bool checkPlayerCollisions(const Vector3& target_pos, std::vector<sCollisionData>& collisions);
+	bool checkPlayerCollisions(const Vector3& target_pos, std::vector<sCollisionData>& wall_collisions, std::vector<sCollisionData>& floor_collisions);
 };

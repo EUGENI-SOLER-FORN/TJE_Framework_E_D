@@ -25,7 +25,7 @@ void EntityAI::update(float seconds_elapsed) {
 	double angle = acos( this->direction.dot(moving_direction) );
 
 	this->model.setTranslation(next_position);
-	if(angle) this->model.rotate((float)angle, Vector3::UP);
+	if(angle) this->model.rotate((float)angle *seconds_elapsed, Vector3::UP);
 
 	this->direction = moving_direction;
 

@@ -15,6 +15,25 @@ EntityPlayer::EntityPlayer() : EntityMesh(){
 	this->player_camera2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
 }
 
+Entity* EntityPlayer::getEntityPointingAt(Camera* camera) {
+	PlayStage* ps = dynamic_cast<PlayStage*>(Game::instance->manager->current);
+	if (!ps) return nullptr;
+	World* current_world = ps->scene;
+	const Vector3& camera_front = (camera->center - camera->eye).normalize();
+	Vector3 col_point;
+	Vector3 col_normal;
+
+	for (auto entity : current_world->root->children) {
+		EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
+
+		if (entity_collider->mesh->testRayCollision(entity_collider->model, camera->eye, camera_front, col_point, col_normal, 2.0f, false)) {
+			std::cout << "pointing at something!" << std::endl;
+			return entity_collider;
+		}
+	}
+	return nullptr;
+}
+
 void EntityPlayer::update(float seconds_elapsed){
 	// Check if we are in a playstage, if not return;
 	PlayStage* ps = dynamic_cast<PlayStage*>(Game::instance->manager->current);
@@ -44,35 +63,40 @@ void EntityPlayer::update(float seconds_elapsed){
 	this->velocity += moving_direction;
 
 	// Check and manage possible collisions
-	World* current_world = PlayStage::current_stage->scene;
-	std::vector<sCollisionData> collisions;
+	World* current_world = ps->scene;
+	std::vector<sCollisionData> floor_collisions;
+	std::vector<sCollisionData> wall_collisions;
 
 	const Vector3 possible_position = current_position + this->velocity * seconds_elapsed;
 	for (auto entity : current_world->root->children) {
 		EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
-		if (entity_collider) entity_collider->checkPlayerCollisions(possible_position, collisions);
+		if (entity_collider) entity_collider->checkPlayerCollisions(possible_position, wall_collisions, floor_collisions);
+		
 	}
-	// Run the array of collisions
+	// Avoid collisions with walls (GLITCHY)
+	if(!wall_collisions.empty()) {
+		this->velocity.x *= 0.f;
+		this->velocity.z *= 0.f;
+	}
+	
 	bool grounded = false;
-	for (sCollisionData& col : collisions) {
+	for (sCollisionData& col : floor_collisions) {
 		// If normal is pointing upwards, it means it's a floor collision
 		float up_factor = col.colNormal.dot(Vector3::UP);
-		if (up_factor > 0.8) { 
-			grounded = true; 
+		if (up_factor > 0.8f) {
+			grounded = true;
+			const Vector3 slide_direction = velocity.dot(col.colNormal) * col.colNormal;
+			this->velocity.x -= slide_direction.x;
 			this->velocity.y = 0.f >  this->velocity.y ? 0.f : this->velocity.y;
-			continue;
+			this->velocity.z -= slide_direction.z;
 		}
-		
-		const Vector3 slide_direction = velocity.dot(col.colNormal) * col.colNormal;
-		this->velocity.x -= slide_direction.x;
-		this->velocity.z -= slide_direction.z;
 	}
-	if (grounded && Input::isKeyPressed(SDL_SCANCODE_SPACE)) this->velocity.y = 2.0f;
+	if (grounded && Input::isKeyPressed(SDL_SCANCODE_SPACE)) this->velocity.y = this->player_speed;
 	const Vector3& new_position = current_position + this->velocity * seconds_elapsed;
 
 	// Reduce velocity for next frame stopping
 	this->velocity.x *= 0.5f;
-	if(!grounded) this->velocity.y  -= 9.8f * seconds_elapsed;
+	if(!grounded) this->velocity.y -= this->player_speed* 2 * seconds_elapsed;
 	this->velocity.z *= 0.5f;
 
 	// Rotate to look at camera is poining
@@ -82,6 +106,8 @@ void EntityPlayer::update(float seconds_elapsed){
 
 void EntityPlayer::render(Camera* camera)
 {
+	getEntityPointingAt(camera);
+
 	// Render mesh (not necessary, since it's first person)
 	// EntityMesh::render(camera);
 
@@ -98,6 +124,14 @@ void EntityPlayer::render(Camera* camera)
 	shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
 	shader->setUniform("u_model", m);
 	// Render mesh
+	mesh->render(GL_LINES);
+	m = this->model;
+	m.translate(Vector3(0.f, this->sphere_radius, 0.f));
+	m.scale(sphere_radius, sphere_radius, sphere_radius);
+	// Set basic uniforms values
+	shader->setUniform("u_color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+	shader->setUniform("u_model", m);
 	mesh->render(GL_LINES);
 	// Disable shader
 	shader->disable();
