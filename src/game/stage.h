@@ -49,16 +49,13 @@ class MenuStage : public Stage
 {
 public:
 	MenuStage();
-	~MenuStage() {};
+	~MenuStage();
 
 	EntityUI* background;
-	// EntityUI* play_button;
-	// EntityUI* guide_button;
-	// EntityUI* exit_button;
+	EntityUI* startbutton;
 
 	void onButtonPressed(eButtonId buttonID) {};
 	void render(Camera* camera) override { this->background->render(camera); };
-	void update(float seconds_elapsed);
 };
 
 class PlayStage : public Stage

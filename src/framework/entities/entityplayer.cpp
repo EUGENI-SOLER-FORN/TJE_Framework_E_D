@@ -9,7 +9,7 @@ EntityPlayer::EntityPlayer() : EntityMesh(){
 	this->inventory = new Inventory();
 	this->point = new PointCross();
 	this->minimap = new MiniMap();
-	 
+	
 	this->player_camera2D = new Camera();
 	this->player_camera2D->view_matrix = Matrix44();
 	this->player_camera2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);

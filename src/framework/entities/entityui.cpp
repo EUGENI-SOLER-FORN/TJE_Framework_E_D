@@ -7,7 +7,6 @@ EntityUI::EntityUI(const Vector2& position, const Vector2& size, const Material&
     this->position = position;
     this->width = size.x;
     this->height = size.y;
-    this->is3D = false;
     // Store textures
     this->regularTexture = material.diffuse;
     this->textureOnHover = material.diffuse;

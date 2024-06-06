@@ -21,7 +21,6 @@ public:
 	Vector2 position;
 	Texture* regularTexture;
 	Texture* textureOnHover;
-
 	//Texture* onClicked;
 	bool is3D;
 	float height;

@@ -24,7 +24,6 @@ void World::loadSky(){
 	sky_material.diffuse = sky_texture;
 	
 	World::sky = new EntityMesh(Mesh::Get("data/meshes/box.ASE"), sky_material, "sky");
-	sky->model.scale(10.f, 10.f, 10.f);
 }
 // Code taken from AG:
 bool World::parseScene(const char* filename, Entity* root)

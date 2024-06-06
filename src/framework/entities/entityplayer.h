@@ -15,13 +15,8 @@ public:
 	};
 	
 	// general attributes
-<<<<<<< Updated upstream
 	const Vector3 player_height = Vector3(0.f, 1.25f, 0.f);
 	const float sphere_radius = .5f;
-=======
-	const Vector3 player_height = Vector3(0.f, 1.0f, 0.f);
-	const float sphere_radius = .05f;
->>>>>>> Stashed changes
 
 	// stats of the player
 	const float player_speed = 3.f;
