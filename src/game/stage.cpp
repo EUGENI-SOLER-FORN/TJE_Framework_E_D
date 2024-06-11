@@ -7,12 +7,18 @@ EntityPlayer* PlayStage::player = nullptr;
 
 StageManager::StageManager()
 {
+	// TODO: create loading screen
+	//this->stages["loading"] = new LoadingStage();
+	//this->current = this->stages["loading"];
+	
 	this->stages["menu_principal"] = new MenuStage();
-	this->stages["beach_scene"] = new PlayStage("data/scenes/beach_scene.scene");
-	this->stages["cross_scene"] = new PlayStage("data/scenes/cross_scene.scene");
+	this->stages["menu_principal"] = new MenuStage();
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
-	this->current = this->stages["beach_scene"];
-	this->goTo("island_scene");
+
+	// TODO: create outro/restart stage
+	//this->stages["final"] = new PlayStage("data/scenes/island_scene.scene");
+
+	this->current = this->stages["island_scene"];
 	PlayStage::current_stage = (PlayStage*)StageManager::current;
 	PlayStage::player = new EntityPlayer();
 }

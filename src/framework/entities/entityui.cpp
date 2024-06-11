@@ -73,7 +73,7 @@ Inventory::Inventory(){
     //center div
     p = Vector2(window_center, this->background_size.y / 2.f + 20.f);
     mat.diffuse = Texture::Get("data/textures/inventory/hud.png");
-    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
     this->background = new EntityUI(p, background_size, mat);
     this->background->setType(BACKGROUND);
     
@@ -93,7 +93,7 @@ Inventory::Inventory(){
 PointCross::PointCross(){
     const Vector2& screen_center = Vector2(0.5f * (float)Game::instance->window_width, 0.5f * (float)Game::instance->window_height);
     Material cross_mat;
-    cross_mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+    cross_mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
     cross_mat.diffuse = Texture::Get("data/textures/pointcross/cross.png");
     this->cross = new EntityUI(screen_center, this->cross_size, cross_mat);
 }
@@ -108,7 +108,7 @@ MiniMap::MiniMap(){
 
     const Vector2& p = Vector2(window_width - this->minimap_size.x/2.f - this->margin, this->minimap_size.y/2.f + this->margin);
     mat.diffuse = Texture::Get("data/textures/minimap_frame.png");
-    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
     this->background = new EntityUI(p, this->minimap_size, mat);
 }
 // Code seen in theory class
@@ -119,7 +119,7 @@ void MiniMap::render(){
 
     const Vector2& size = Vector2((float)Game::instance->window_width, (float)Game::instance->window_height);
     glViewport((GLint)(size.x - this->minimap_size.x - this->margin/2.f), (GLint)(3.f/2.f*this->margin), (GLsizei)(this->minimap_size.x - this->margin), (GLsizei)(this->minimap_size.y - this->margin));
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
 
     // Rotate to look as player
     Matrix44 myaw;
@@ -134,6 +134,31 @@ void MiniMap::render(){
     ps->scene->root->render(MiniMap::minimapCamera);
     
     // reset viewport
-    glEnable(GL_DEPTH_TEST); 
+    //glEnable(GL_DEPTH_TEST); 
     glViewport(0,0, (GLsizei)size.x, (GLsizei)size.y);
 }
+
+void StatBar::render(Camera* camera) {
+    if (!this->is3D) glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    // opcional (transparència)
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    this->material.shader->enable();
+
+    this->material.shader->setUniform("u_model", this->model);
+    this->material.shader->setUniform("u_color", this->material.color);
+    this->material.shader->setUniform("u_mask", this->stat);
+    this->material.shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+
+    this->mesh->render(GL_TRIANGLES);
+
+    this->material.shader->disable();
+    //Restore flags
+    glEnable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+}
+void StatBar::update_stat(float s) { this->stat = s/100.f; }

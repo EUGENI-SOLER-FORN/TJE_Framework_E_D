@@ -5,17 +5,24 @@
 EntityPlayer::EntityPlayer() : EntityMesh(){
 	this->name = "player";
 	this->model = Matrix44::IDENTITY;
-	this->model.setTranslation(this->player_height + Vector3(0.f, 10.f, 0.f));
+	this->model.setTranslation(this->player_height + Vector3(5.f, 10.f, 5.f));
 	this->inventory = new Inventory();
 	this->point = new PointCross();
 	this->minimap = new MiniMap();
+
+	Material mat;
+	mat.color = Vector4(0.f, 1.f, 0.f, 1.f);
+	mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
+	this->hunger = new StatBar(this->player_hunger, Vector2(10.f,30.f), Vector2(10.f, 200.f), mat);
+	mat.color = Vector4(0.f, 0.f, 1.f, 1.f);
+	this->stamina = new StatBar(this->player_sleepiness, Vector2(25.f, 30.f), Vector2(10.f, 200.f), mat);
 	
 	this->player_camera2D = new Camera();
 	this->player_camera2D->view_matrix = Matrix44();
 	this->player_camera2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
 }
 
-Entity* EntityPlayer::getEntityPointingAt(Camera* camera) {
+EntityDrop* EntityPlayer::getEntityPointingAt(Camera* camera) {
 	PlayStage* ps = dynamic_cast<PlayStage*>(Game::instance->manager->current);
 	if (!ps) return nullptr;
 	World* current_world = ps->scene;
@@ -24,11 +31,12 @@ Entity* EntityPlayer::getEntityPointingAt(Camera* camera) {
 	Vector3 col_normal;
 
 	for (auto entity : current_world->root->children) {
-		EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
+		EntityDrop* entity_drop = dynamic_cast<EntityDrop*>(entity);
+		if (!entity_drop) continue;
 
-		if (entity_collider->mesh->testRayCollision(entity_collider->model, camera->eye, camera_front, col_point, col_normal, 2.0f, false)) {
-			std::cout << "pointing at something!" << std::endl;
-			return entity_collider;
+		if (entity_drop->mesh->testRayCollision(entity_drop->model, camera->eye, camera_front, col_point, col_normal, 1.0f, false)) {
+			entity_drop->mask = 1.f;
+			return entity_drop;
 		}
 	}
 	return nullptr;
@@ -70,8 +78,9 @@ void EntityPlayer::update(float seconds_elapsed){
 	const Vector3 possible_position = current_position + this->velocity * seconds_elapsed;
 	for (auto entity : current_world->root->children) {
 		EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
+		EntityDrop* entity_drop = dynamic_cast<EntityDrop*>(entity);
 		if (entity_collider) entity_collider->checkPlayerCollisions(possible_position, wall_collisions, floor_collisions);
-		
+		if (entity_drop && entity_drop->isVisible) entity_drop->checkPlayerCollisions(possible_position, wall_collisions, floor_collisions, TREE);
 	}
 	// Avoid collisions with walls (GLITCHY)
 	if(!wall_collisions.empty()) {
@@ -92,51 +101,68 @@ void EntityPlayer::update(float seconds_elapsed){
 		}
 	}
 	if (grounded && Input::isKeyPressed(SDL_SCANCODE_SPACE)) this->velocity.y = this->player_speed;
+	//DEBUG if falling
+	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) this->velocity.y = 1.0f;
 	const Vector3& new_position = current_position + this->velocity * seconds_elapsed;
 
 	// Reduce velocity for next frame stopping
 	this->velocity.x *= 0.5f;
-	if(!grounded) this->velocity.y -= this->player_speed* 2 * seconds_elapsed;
+	if(!grounded) this->velocity.y -= 9.8f * seconds_elapsed;
 	this->velocity.z *= 0.5f;
 
 	// Rotate to look at camera is poining
 	this->model.setTranslation(new_position);
 	this->model.rotate(ps->camera_yaw, Vector3::UP);
+	
+	this->pointingAt = getEntityPointingAt(ps->stageCamera);
+	// Check "attack"
+	if (this->pointingAt && Input::isMousePressed(SDL_BUTTON_LEFT)) this->pointingAt->hit();
+	if (this->pointingAt) {
+		if(this->pointingAt->type == HOUSE && Input::isMousePressed(SDL_BUTTON_LEFT)) this->sleep();
+
+	}
+
+	this->stamina->update_stat(this->player_sleepiness);
+	this->player_hunger -= 100.f/180.f * seconds_elapsed;
+	this->hunger->update_stat(this->player_hunger);
 }
 
-void EntityPlayer::render(Camera* camera)
-{
-	getEntityPointingAt(camera);
-
+void EntityPlayer::render(Camera* camera) {
 	// Render mesh (not necessary, since it's first person)
 	// EntityMesh::render(camera);
-
-	// Load shaders and mesh, get model matrix and enable shader
-	Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
-	Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
-	Matrix44 m = this->model;
-	shader->enable();
-	// Do translation and scaling transformations
-	m.translate(this->player_height);
-	m.scale(sphere_radius, sphere_radius, sphere_radius);
-	// Set basic uniforms values
-	shader->setUniform("u_color", Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-	shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
-	shader->setUniform("u_model", m);
-	// Render mesh
-	mesh->render(GL_LINES);
-	m = this->model;
-	m.translate(Vector3(0.f, this->sphere_radius, 0.f));
-	m.scale(sphere_radius, sphere_radius, sphere_radius);
-	// Set basic uniforms values
-	shader->setUniform("u_color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-	shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
-	shader->setUniform("u_model", m);
-	mesh->render(GL_LINES);
-	// Disable shader
-	shader->disable();
-
+	{
+	//// Load shaders and mesh, get model matrix and enable shader
+	//Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+	//Mesh* mesh = Mesh::Get("data/meshes/sphere.obj");
+	//Matrix44 m = this->model;
+	//shader->enable();
+	//// Do translation and scaling transformations
+	//m.translate(this->player_height);
+	//m.scale(sphere_radius, sphere_radius, sphere_radius);
+	//// Set basic uniforms values
+	//shader->setUniform("u_color", Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	//shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+	//shader->setUniform("u_model", m);
+	//// Render mesh
+	//mesh->render(GL_LINES);
+	//m = this->model;
+	//m.translate(Vector3(0.f, this->sphere_radius, 0.f));
+	//m.scale(sphere_radius, sphere_radius, sphere_radius);
+	//// Set basic uniforms values
+	//shader->setUniform("u_color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	//shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+	//shader->setUniform("u_model", m);
+	//mesh->render(GL_LINES);
+	//// Disable shader
+	//shader->disable();
+	}
+	this->hunger->render(this->player_camera2D);
+	this->stamina->render(this->player_camera2D);
 	this->inventory->render(this->player_camera2D);
 	this->point->render(this->player_camera2D);
 	this->minimap->render();
+	float w = (float)Game::instance->window_width;
+	float h = (float)Game::instance->window_height;
+	
+	if (this->pointingAt) drawText(w/2.f, h- this->inventory->background_size.y - 2.f*this->minimap->margin, "Left Click to cut the tree down", Vector3(1.f), 2.f);
 }

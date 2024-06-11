@@ -20,7 +20,8 @@ void EntityMesh::render(Camera* camera) {
 	// Set viewprojection matrix of the camera
 	this->material.shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
 	this->material.shader->setUniform("u_camera_pos", camera->eye);
-	
+	if (camera->type == Camera::ORTHOGRAPHIC) this->material.shader->setUniform("u_minimap", 1.f);
+
 	// Set texture
 	if (this->material.diffuse) this->material.shader->setTexture("u_texture", this->material.diffuse, 0);
 

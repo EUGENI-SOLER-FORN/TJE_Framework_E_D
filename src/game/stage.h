@@ -1,13 +1,12 @@
 #pragma once
+#include "game/world.h"
 #include "framework/entities/entityplayer.h"
 #include "framework/input.h"
 #include "framework/audio.h"
-#include "world.h"
 #include <map>
 #include <string>
 
-class Stage
-{
+class Stage{
 public:
 	Stage() {};
 	~Stage() { delete this->stageCamera; };

@@ -78,7 +78,17 @@ public:
 	EntityUI* background;
 	const Vector2& minimap_size = Vector2(96.f);
 	const int& margin = 20;
-	const Vector3& cameraheight = Vector3(0.f, 5.f, 0.f);
+	const Vector3& cameraheight = Vector3(0.f, 10.f, 0.f);
 
 	void render();
+};
+
+class StatBar : EntityUI{
+public:
+	float stat;
+	StatBar(float s, const Vector2& position, const Vector2& size, const Material& material) : EntityUI(position, size, material) {
+		this->stat = s/100.f;
+	};
+	void update_stat(float s);
+	void render(Camera* camera) override;
 };

@@ -1,5 +1,7 @@
 #pragma once
 #include "world.h"
+#include "framework/entities/entitycollider.h"
+
 EntityMesh* World::sky = nullptr;
 
 World::World(const char* sceneFile) {
@@ -79,28 +81,40 @@ bool World::parseScene(const char* filename, Entity* root)
 		Material mat = render_data.material;
 		EntityMesh* new_entity = nullptr;
 
-		size_t tag = data.first.find("@wall");
+		size_t tree_tag = data.first.find("@tree");
+		size_t house_tag = data.first.find("@house");
 
-		if (tag != std::string::npos) {
-			std::cout << data.first << std::endl;
+		if (tree_tag != std::string::npos) {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
 			// Create a different type of entity
-			new_entity = new EntityCollider(mesh, mat);
-			new_entity->changeVisibility();
+			mat.diffuse = Texture::Get("data/textures/tree_texture.tga");
+			mat.color = mat.diffuse ? Vector4(0.9f, 0.9f, 0.9f, 1.0f) : Vector4(0.0f);
+			mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+			new_entity = new EntityDrop(mesh, mat);
+			new_entity->name = "Tree";
+			new_entity->type = TREE;
+		}
+		else if (house_tag != std::string::npos) {
+			Mesh* mesh = Mesh::Get(mesh_name.c_str());
+			// Create a different type of entity
+			mat.diffuse = Texture::Get("data/textures/colormap.png");
+			mat.color = mat.diffuse ? Vector4(0.9f, 0.9f, 0.9f, 1.0f) : Vector4(0.0f);
+			mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+			new_entity = new EntityDrop(mesh, mat);
+			new_entity->name = "House";
+			new_entity->type = HOUSE;
 		}
 		else {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
 			mat.diffuse = Texture::Get("data/textures/colormap.png");
 			mat.color = mat.diffuse ? Vector4(0.9f, 0.9f, 0.9f, 1.0f) : Vector4(0.0f);
-			mat.shader = Shader::Get("data/shaders/basic.vs", mat.diffuse ? "data/shaders/texture.fs" : "data/shaders/flat.fs");
+			mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 			new_entity = new EntityCollider(mesh, mat);
 		}
 
 		if (!new_entity) {
 			continue;
 		}
-
-		new_entity->name = data.first;
 
 		// Create instanced entity
 		if (render_data.models.size() > 1) {
