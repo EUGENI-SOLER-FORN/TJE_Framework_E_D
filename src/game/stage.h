@@ -22,7 +22,7 @@ public:
 	Camera* stageCamera;
 	float camera_yaw = 0.f;
 	float camera_pitch = 0.f;
-	float camera_speed = 1.f;
+	float camera_speed = 6.f;
 
 	virtual void render(Camera* camera) {};
 	virtual void update(float seconds_elapsed) {};
