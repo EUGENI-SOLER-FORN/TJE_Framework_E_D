@@ -119,7 +119,7 @@ void MiniMap::render(){
 
     const Vector2& size = Vector2((float)Game::instance->window_width, (float)Game::instance->window_height);
     glViewport((GLint)(size.x - this->minimap_size.x - this->margin/2.f), (GLint)(3.f/2.f*this->margin), (GLsizei)(this->minimap_size.x - this->margin), (GLsizei)(this->minimap_size.y - this->margin));
-    //glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
 
     // Rotate to look as player
     Matrix44 myaw;
@@ -134,17 +134,15 @@ void MiniMap::render(){
     ps->scene->root->render(MiniMap::minimapCamera);
     
     // reset viewport
-    //glEnable(GL_DEPTH_TEST); 
+    glEnable(GL_DEPTH_TEST); 
     glViewport(0,0, (GLsizei)size.x, (GLsizei)size.y);
 }
 
 void StatBar::render(Camera* camera) {
-    if (!this->is3D) glDisable(GL_DEPTH_TEST);
+    this->icon->render(camera);
+    //Restore flags
     glDisable(GL_CULL_FACE);
-
-    // opcional (transparència)
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     this->material.shader->enable();
 
@@ -159,6 +157,22 @@ void StatBar::render(Camera* camera) {
     //Restore flags
     glEnable(GL_CULL_FACE);
     glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
 }
-void StatBar::update_stat(float s) { this->stat = s/100.f; }
+void StatBar::setSleepIcon() {
+    Material mat;
+    mat.diffuse = Texture::Get("data/textures/statbar/sleep_icon.tga");
+    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+    this->icon = new EntityUI(this->position + Vector2(0.0125f * this->width, 0.f), Vector2(this->width - 0.125f * this->width), mat);
+}
+void StatBar::setHungerIcon() {
+    Material mat;
+    mat.diffuse = Texture::Get("data/textures/statbar/food_icon.tga");
+    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+    this->icon = new EntityUI(this->position + Vector2(0.0125f * this->width, 0.f), Vector2(this->width - 0.125f * this->width), mat);
+}
+void StatBar::update_stat(float s) {
+    this->stat = s / 100.f;
+    float actual_height = this->height * this->stat;
+    this->icon->position.y = (this->position.y - this->height / 2.f) + actual_height;
+    this->icon->update(0.f);
+}

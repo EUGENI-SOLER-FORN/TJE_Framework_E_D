@@ -26,7 +26,7 @@ void EntityMesh::render(Camera* camera) {
 	if (this->material.diffuse) this->material.shader->setTexture("u_texture", this->material.diffuse, 0);
 
 	// Render the mesh using the shader and depending on
-	if (this->isInstanced) this->mesh->renderInstanced(GL_TRIANGLES, this->models.data(), this->models.size());
+	if (this->isInstanced) this->mesh->renderInstanced(GL_TRIANGLES, this->models.data(), (int)this->models.size());
 	else this->mesh->render(GL_TRIANGLES);
 
 	// Disable shader after finishing rendering

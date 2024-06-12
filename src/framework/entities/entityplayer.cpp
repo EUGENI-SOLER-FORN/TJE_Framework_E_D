@@ -10,13 +10,17 @@ EntityPlayer::EntityPlayer() : EntityMesh(){
 	this->point = new PointCross();
 	this->minimap = new MiniMap();
 
-	Material mat;
-	mat.color = Vector4(0.f, 1.f, 0.f, 1.f);
-	mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
-	this->hunger = new StatBar(this->player_hunger, Vector2(10.f,30.f), Vector2(10.f, 200.f), mat);
-	mat.color = Vector4(0.f, 0.f, 1.f, 1.f);
-	this->stamina = new StatBar(this->player_sleepiness, Vector2(25.f, 30.f), Vector2(10.f, 200.f), mat);
-	
+	float h = (float)Game::instance->window_height / 2.f;
+	Material mat1, mat2;
+	mat1.color = Vector4(0.f, 1.f, 0.f, 1.f);
+	mat1.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
+	this->hunger = new StatBar(this->player_hunger, Vector2(30.f, h), Vector2(25.f, 200.f), mat1);
+	this->hunger->setHungerIcon();
+	mat2.color = Vector4(0.f, 0.f, 1.f, 1.f);
+	mat2.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
+	this->stamina = new StatBar(this->player_sleepiness, Vector2(60.f, h), Vector2(25.f, 200.f), mat2);
+	this->stamina->setSleepIcon();
+
 	this->player_camera2D = new Camera();
 	this->player_camera2D->view_matrix = Matrix44();
 	this->player_camera2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
@@ -46,10 +50,6 @@ void EntityPlayer::update(float seconds_elapsed){
 	// Check if we are in a playstage, if not return;
 	PlayStage* ps = dynamic_cast<PlayStage*>(Game::instance->manager->current);
 	if (!ps) return;
-
-	// Update sleep and stamina
-	this->player_sleepiness -= 0.15f * seconds_elapsed;
-	this->player_hunger -= 0.15f * seconds_elapsed;
 
 	// Set some variables
 	float moving_speed = this->player_speed;
@@ -116,14 +116,32 @@ void EntityPlayer::update(float seconds_elapsed){
 	
 	this->pointingAt = getEntityPointingAt(ps->stageCamera);
 	// Check "attack"
-	if (this->pointingAt && Input::isMousePressed(SDL_BUTTON_LEFT)) this->pointingAt->hit();
 	if (this->pointingAt) {
-		if(this->pointingAt->type == HOUSE && Input::isMousePressed(SDL_BUTTON_LEFT)) this->sleep();
-
+		switch (this->pointingAt->type) {
+		case TREE:
+			//this->pointingAt->healthbar->update(this->pointingAt->model.getTranslation(), this->pointingAt->health);
+			if (Input::isMousePressed(SDL_BUTTON_LEFT)) {
+				if (this->player_sleepiness > 10.f) {
+					this->player_sleepiness -= 10.f;
+					this->pointingAt->hit();
+				}
+				else {
+					float y = (float)Game::instance->window_height / 2.f;
+					float x = (float)Game::instance->window_width / 2.f;
+					drawText(x - 40.f, y + 20.f, "NOT ENOUGH STAMINA, REST!", Vector3(1.f, 0.f, 0.f));
+				}
+			}
+			break;
+		case HOUSE:
+			if (Input::isMousePressed(SDL_BUTTON_LEFT)) this->sleep();
+			break;
+		}
 	}
 
+	// Update sleep and stamina
+	this->player_sleepiness = clamp(this->player_sleepiness - (this->velocity.length() - 0.5f) * seconds_elapsed, 0.f, 100.f);
 	this->stamina->update_stat(this->player_sleepiness);
-	this->player_hunger -= 100.f/180.f * seconds_elapsed;
+	this->player_hunger = clamp(this->player_hunger - 0.3f * seconds_elapsed, 0.f, 100.f);
 	this->hunger->update_stat(this->player_hunger);
 }
 
@@ -156,6 +174,7 @@ void EntityPlayer::render(Camera* camera) {
 	//// Disable shader
 	//shader->disable();
 	}
+
 	this->hunger->render(this->player_camera2D);
 	this->stamina->render(this->player_camera2D);
 	this->inventory->render(this->player_camera2D);

@@ -10,20 +10,18 @@ bool EntityCollider::checkPlayerCollisions(const Vector3& target_pos, std::vecto
 
 	const Vector3& player_head = target_pos + PlayStage::player->player_height;
 	const float sphereRadius = PlayStage::player->sphere_radius;
-	const Vector3& player_foot = target_pos + Vector3(0.f, sphereRadius * 0.75, 0.f);
+	const Vector3& player_foot = target_pos + Vector3(0.f, sphereRadius * 0.75f, 0.f);
 	const float max_ray_dist = PlayStage::player->player_height.y;
 
 	if (!this->isInstanced) {
 		// TESTING SPHERE COLLISION ON HEAD
 		if (this->mesh->testSphereCollision(this->model, player_head, sphereRadius, col_point, col_normal)) {
 			wall_collisions.push_back({ col_point, col_normal.normalize(), player_head.distance(col_point), this });
-			std::cout << "wall!" << std::endl;
 		}
 		
 		// TESTING SPHERE COLLISION ON FOOT
-		if (this->mesh->testSphereCollision(this->model, player_foot, sphereRadius * 0.75, col_point, col_normal)) {
+		if (this->mesh->testSphereCollision(this->model, player_foot, sphereRadius * 0.75f, col_point, col_normal)) {
 			wall_collisions.push_back({ col_point, col_normal.normalize(), player_foot.distance(col_point), this });
-			std::cout << "wall!" << std::endl;
 		}
 
 		// TESTING RAY COLLISION WITH FLOOR
@@ -37,13 +35,11 @@ bool EntityCollider::checkPlayerCollisions(const Vector3& target_pos, std::vecto
 			// TESTING SPHERE COLLISION ON HEAD
 			if (this->mesh->testSphereCollision(this->models[i], player_head, sphereRadius, col_point, col_normal)) {
 				wall_collisions.push_back({ col_point, col_normal.normalize(), player_head.distance(col_point), this });
-				std::cout << "wall inst!" << std::endl;
 			}
 
 			// TESTING SPHERE COLLISION ON FOOT
-			if (this->mesh->testSphereCollision(this->models[i], player_foot, sphereRadius * 0.75, col_point, col_normal)) {
+			if (this->mesh->testSphereCollision(this->models[i], player_foot, sphereRadius * 0.75f, col_point, col_normal)) {
 				wall_collisions.push_back({ col_point, col_normal.normalize(), player_foot.distance(col_point), this });
-				std::cout << "wall inst!" << std::endl;
 			}
 
 			// TESTING RAY COLLISION WITH FLOOR
@@ -91,7 +87,7 @@ void EntityDrop::render(Camera* camera){
 	this->material.shader->setUniform("u_mask", this->mask);
 
 	// Render the mesh using the shader and depending on
-	if (this->isInstanced) this->mesh->renderInstanced(GL_TRIANGLES, this->models.data(), this->models.size());
+	if (this->isInstanced) this->mesh->renderInstanced(GL_TRIANGLES, this->models.data(), (int)this->models.size());
 	else this->mesh->render(GL_TRIANGLES);
 
 	this->material.shader->setUniform("u_mask", 0.f);

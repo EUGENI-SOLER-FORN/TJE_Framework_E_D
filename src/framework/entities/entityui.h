@@ -83,12 +83,34 @@ public:
 	void render();
 };
 
-class StatBar : EntityUI{
+class StatBar : public EntityUI{
 public:
 	float stat;
 	StatBar(float s, const Vector2& position, const Vector2& size, const Material& material) : EntityUI(position, size, material) {
 		this->stat = s/100.f;
 	};
+
+	EntityUI* icon;
+	void setSleepIcon();
+	void setHungerIcon();
+
 	void update_stat(float s);
 	void render(Camera* camera) override;
+	~StatBar() { delete icon; };
+};
+
+class HealthBar {
+public:
+	HealthBar() {
+		Material mat;
+		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/healthbar.fs");
+		this->bar = new EntityUI(Vector2(0.f), Vector2(100.f, 25.f), mat);
+	};
+	EntityUI* bar;
+	float health = 100.f;
+
+	// TODO
+	void render(Camera* camera) {};
+	void update(Vector3 position, float health) {};
+	~HealthBar() { delete bar; }
 };
