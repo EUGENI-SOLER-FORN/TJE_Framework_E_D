@@ -51,10 +51,12 @@ public:
 	~MenuStage();
 
 	EntityUI* background;
-	EntityUI* startbutton;
+	EntityUI* playbutton;
+	EntityUI* exitbutton;
 
 	void onButtonPressed(eButtonId buttonID) {};
-	void render(Camera* camera) override { this->background->render(camera); };
+	void render();
+	void update();
 };
 
 class PlayStage : public Stage

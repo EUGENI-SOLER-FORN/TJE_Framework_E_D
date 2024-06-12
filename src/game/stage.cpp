@@ -8,17 +8,16 @@ EntityPlayer* PlayStage::player = nullptr;
 StageManager::StageManager()
 {
 	// TODO: create loading screen
-	//this->stages["loading"] = new LoadingStage();
-	//this->current = this->stages["loading"];
+	// this->stages["loading"] = new LoadingStage();
 	
-	this->stages["menu_principal"] = new MenuStage();
 	this->stages["menu_principal"] = new MenuStage();
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
 
 	// TODO: create outro/restart stage
-	//this->stages["final"] = new PlayStage("data/scenes/island_scene.scene");
+	// this->stages["final"] = new PlayStage("data/scenes/island_scene.scene");
 
-	this->current = this->stages["island_scene"];
+	this->current = this->stages["menu_principal"];
+
 	PlayStage::current_stage = (PlayStage*)StageManager::current;
 	PlayStage::player = new EntityPlayer();
 }
@@ -28,20 +27,50 @@ StageManager::~StageManager(){
 }
 
 MenuStage::MenuStage(){
+	float width = (float)Game::instance->window_width;
+	float height = (float)Game::instance->window_height;
+
 	Material background_material;
-	background_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-	background_material.diffuse = Texture::Get("data/textures/background.png");
-	this->background = new EntityUI(Vector2(0.f,0.f) ,Vector2((float)Game::instance->window_width, (float)Game::instance->window_height), background_material);
-	this->background->setType(BACKGROUND);
+	background_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+	background_material.diffuse = Texture::Get("data/textures/menu/background.png");
+	background = new EntityUI(Vector2(0.5f * width, 0.5f * height), Vector2(width, height), background_material);
+
+	Material play_material;
+	play_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+	play_material.diffuse = Texture::Get("data/textures/menu/play.png");
+	playbutton = new EntityUI(Vector2(10.0f, 0.5f * height), Vector2(30.0f), play_material);
+
+	Material exit_material;
+	exit_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+	exit_material.diffuse = Texture::Get("data/textures/menu/exit.png");
+	exitbutton = new EntityUI(Vector2(20.0f, 0.5f * height), Vector2(30.0f), exit_material);
+
+	background->addChild(playbutton);
+	background->addChild(exitbutton);
+}
+
+void MenuStage::render() {
+	Camera* camera_2D;
+	camera_2D = new Camera();
+	camera_2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
+
+	background->render(camera_2D);
+	playbutton->render(camera_2D);
+	exitbutton->render(camera_2D);
+}
+
+void MenuStage::update() {
+	// TODO: give sense, see if the mouse is inside rectangle, give color, see if it is clicked inside (onButtonPressed)
 }
 
 MenuStage::~MenuStage(){
-
+	delete background;
+	delete playbutton;
+	delete exitbutton;
 }
 
 PlayStage::PlayStage(const char* sceneFile)
 {
-//	PlayStage::current_stage = this;
 
 	this->scene = new World(sceneFile);
 	this->stageCamera = new Camera();
