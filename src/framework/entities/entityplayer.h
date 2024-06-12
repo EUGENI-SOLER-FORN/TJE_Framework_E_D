@@ -31,7 +31,7 @@ public:
 	MiniMap* minimap;
 	StatBar* stamina;
 	StatBar* hunger;
-	
+
 	// methods to manage hunger and sleep
 	void eat() { this->player_hunger = std::min(100.0f, this->player_hunger + 20.0f); }
 	void sleep() { this->player_sleepiness = std::min(100.0f, this->player_sleepiness + 20.0f); }
