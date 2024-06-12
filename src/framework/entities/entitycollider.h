@@ -1,5 +1,6 @@
 #pragma once
 #include "framework/entities/entitymesh.h"
+#include "framework/entities/entityui.h"
 
 class EntityCollider;
 
@@ -22,10 +23,15 @@ public:
 
 class EntityDrop : public EntityCollider {
 public:
-	EntityDrop(Mesh* mesh, Material& material) : EntityCollider(mesh, material) { this->layer = TREE; this->name = "Tree"; };
+	EntityDrop(Mesh* mesh, Material& material);
+	
 	float mask = 0.f;
 	int hitpoints = 5;
 	float health = 100.f;
+
+	StatBar* healthbar;
+
 	void hit();
 	void render(Camera* camera) override;
+	void update(float seconds_elapsed) override;
 };

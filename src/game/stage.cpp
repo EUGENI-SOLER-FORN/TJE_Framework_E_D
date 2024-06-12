@@ -56,7 +56,6 @@ PlayStage::PlayStage(const char* sceneFile)
 }
 
 void PlayStage::updateSceneCamera(float seconds_elapsed){
-	
 	// Code seen in theory class
 	// Get yaw and pitch (rotations in Z and Y axis) from mouse input and camera speed
 	this->camera_yaw -= Input::mouse_delta.x * this->camera_speed * seconds_elapsed;
