@@ -37,7 +37,7 @@ EntityDrop* EntityPlayer::getEntityPointingAt(Camera* camera) {
 	for (auto entity : current_world->root->children) {
 		EntityDrop* entity_drop = dynamic_cast<EntityDrop*>(entity);
 		if (!entity_drop) continue;
-
+		if (!entity_drop->isVisible) continue;
 		if (entity_drop->mesh->testRayCollision(entity_drop->model, camera->eye, camera_front, col_point, col_normal, 1.0f, false)) {
 			entity_drop->mask = 1.f;
 			return entity_drop;
@@ -115,33 +115,26 @@ void EntityPlayer::update(float seconds_elapsed){
 	this->model.rotate(ps->camera_yaw, Vector3::UP);
 	
 	this->pointingAt = getEntityPointingAt(ps->stageCamera);
+
 	// Check "attack"
 	if (this->pointingAt) {
 		switch (this->pointingAt->type) {
-		case TREE:
-			//this->pointingAt->healthbar->update(this->pointingAt->model.getTranslation(), this->pointingAt->health);
-			if (Input::isMousePressed(SDL_BUTTON_LEFT)) {
-				if (this->player_sleepiness > 10.f) {
+			case TREE:
+				if (Input::wasKeyPressed(SDL_SCANCODE_F) && this->player_sleepiness > 10.f) {
 					this->player_sleepiness -= 10.f;
 					this->pointingAt->hit();
 				}
-				else {
-					float y = (float)Game::instance->window_height / 2.f;
-					float x = (float)Game::instance->window_width / 2.f;
-					drawText(x - 40.f, y + 20.f, "NOT ENOUGH STAMINA, REST!", Vector3(1.f, 0.f, 0.f));
-				}
-			}
-			break;
-		case HOUSE:
-			if (Input::isMousePressed(SDL_BUTTON_LEFT)) this->sleep();
-			break;
+				break;
+			case HOUSE:
+				if (Input::wasKeyPressed(SDL_SCANCODE_F)) this->sleep();
+				break;
 		}
 	}
 
 	// Update sleep and stamina
-	this->player_sleepiness = clamp(this->player_sleepiness - (this->velocity.length() - 0.5f) * seconds_elapsed, 0.f, 100.f);
+	this->player_sleepiness = clamp(this->player_sleepiness - ((float)this->velocity.length() - 0.4f) * seconds_elapsed, 0.f, 100.f);
 	this->stamina->update_stat(this->player_sleepiness);
-	this->player_hunger = clamp(this->player_hunger - 0.3f * seconds_elapsed, 0.f, 100.f);
+	this->player_hunger = clamp(this->player_hunger - 0.2f * seconds_elapsed, 0.f, 100.f);
 	this->hunger->update_stat(this->player_hunger);
 }
 
@@ -180,8 +173,16 @@ void EntityPlayer::render(Camera* camera) {
 	this->inventory->render(this->player_camera2D);
 	this->point->render(this->player_camera2D);
 	this->minimap->render();
-	float w = (float)Game::instance->window_width;
-	float h = (float)Game::instance->window_height;
-	
-	if (this->pointingAt) drawText(w/2.f, h- this->inventory->background_size.y - 2.f*this->minimap->margin, "Left Click to cut the tree down", Vector3(1.f), 2.f);
+
+	float w = (float)Game::instance->window_width / 2.f;
+	float h = (float)Game::instance->window_height / 2.f;
+	if (this->pointingAt) {
+		if (this->pointingAt->type == HOUSE) {
+			drawText(w - 30.f, h - this->inventory->background_size.y - 2.f * this->minimap->margin, "Press 'F' to restore stamina", Vector3(1.f), 2.f);
+		}
+		else if (this->pointingAt->type == TREE) {
+			if(this->player_sleepiness > 10.f) drawText(w - 20.f, h * 2.f - this->inventory->background_size.y - 2.f * this->minimap->margin, "Press 'F' to cut the tree down", Vector3(1.f), 2.f);
+			else drawText(w - 40.f, h + 20.f, "NOT ENOUGH STAMINA, REST!", Vector3(1.f, 0.f, 0.f));
+		}
+	}
 }

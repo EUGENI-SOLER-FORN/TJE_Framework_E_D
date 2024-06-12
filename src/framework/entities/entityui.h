@@ -1,6 +1,5 @@
 #pragma once
 #include "framework/entities/entitymesh.h"
-#include "framework/includes.h"
 #include <algorithm>
 
 enum eButtonId {
@@ -11,8 +10,7 @@ enum eButtonId {
 	HEALTHBAR
 };
 
-class EntityUI : public EntityMesh
-{
+class EntityUI : public EntityMesh {
 public:
 	~EntityUI() {};
 	EntityUI(const Vector2& position, const Vector2& size, const Material& material);
@@ -54,7 +52,7 @@ public:
 	std::vector<int> elements;
 
 	// render all elements
-	void render(Camera* camera) { this->background->render(camera); for (int i = 0; i < INVENTORY_SIZE; i++) if (this->elements[i]) this->imgs[i]->render(camera); };
+	void render(Camera* camera);
 	
 	// add/substract elements
 	void add(eInventoryElements i) { this->elements[i] += 1; };
@@ -93,24 +91,10 @@ public:
 	EntityUI* icon;
 	void setSleepIcon();
 	void setHungerIcon();
+	void setTreeIcon();
 
 	void update_stat(float s);
 	void render(Camera* camera) override;
+
 	~StatBar() { delete icon; };
-};
-
-class HealthBar {
-public:
-	HealthBar() {
-		Material mat;
-		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/healthbar.fs");
-		this->bar = new EntityUI(Vector2(0.f), Vector2(100.f, 25.f), mat);
-	};
-	EntityUI* bar;
-	float health = 100.f;
-
-	// TODO
-	void render(Camera* camera) {};
-	void update(Vector3 position, float health) {};
-	~HealthBar() { delete bar; }
 };

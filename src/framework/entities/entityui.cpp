@@ -78,16 +78,28 @@ Inventory::Inventory(){
     this->background->setType(BACKGROUND);
     
     // add margin of box
-    p.y += 16.f;
-    p.x += 20.0f;
+    //p.y += 16.f;
+    p.x -= img_size.x * 2.f - 10.f;
 
     mat.diffuse = Texture::Get("data/textures/inventory/wood.png");
     this->imgs.push_back(new EntityUI(p, img_size, mat));
 
     // add size of each element
-    p.x += 50.f;
+    p.x += img_size.x + 12.f;
     mat.diffuse = Texture::Get("data/textures/inventory/meat.png");
     this->imgs.push_back(new EntityUI(p, img_size, mat));
+}
+void Inventory::render(Camera* camera) {
+    for (int i = 0; i < INVENTORY_SIZE; i++) 
+        if (this->elements[i]) this->imgs[i]->render(camera);
+    
+    this->background->render(camera);
+
+    float h = (float)Game::instance->window_height;
+    for (int i = 0; i < INVENTORY_SIZE; i++){
+        Vector2& p = this->imgs[i]->position;
+        drawText(p.x, h - 35.f, std::to_string(this->elements[i]), Vector3(1.f), 3.f);
+    }
 }
 
 PointCross::PointCross(){
@@ -170,9 +182,18 @@ void StatBar::setHungerIcon() {
     mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
     this->icon = new EntityUI(this->position + Vector2(0.0125f * this->width, 0.f), Vector2(this->width - 0.125f * this->width), mat);
 }
+void StatBar::setTreeIcon(){
+    this->height = 100.f;
+    Material mat;
+    mat.diffuse = Texture::Get("data/textures/statbar/tree_icon.tga");
+    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+    this->icon = new EntityUI(this->position + Vector2(0.0125f * this->width, 0.f), Vector2(this->width - 0.125f * this->width), mat);
+}
 void StatBar::update_stat(float s) {
+    this->mesh->createQuad(this->position.x, this->position.y, this->width, this->height, true);
     this->stat = s / 100.f;
     float actual_height = this->height * this->stat;
     this->icon->position.y = (this->position.y - this->height / 2.f) + actual_height;
+    this->icon->position.x = this->position.x + 0.0125f * this->width;
     this->icon->update(0.f);
 }

@@ -6,7 +6,7 @@ framework/entities/entitymesh
 framework/entities/entityplayer
 	- hereda de entitymesh
 	✅controls i camera
-	COLLISIONS! i interaccions
+	✅COLLISIONS! i interaccions
 
 framework/entities/entityai ?
 	- hereda de entitymesh
@@ -34,7 +34,12 @@ game/stage
 			glViewPort(0, 0, width, height)
 
 framework/entities/entity_ui
-	struct eButtonId: per saber quins tipus de botons tenim (undefined, play, exit, options…)
+	✅Inventory
+	✅MiniMap
+	✅StatBar	
+	✅PointCross
+	- MenuButtons
+struct eButtonId: per saber quins tipus de botons tenim (undefined, play, exit, options…)
 	hereda d'entity mesh
 	2 constructors (size, material) (pos, size, material, eButtonid, name: mesh->createQuad, aplicar shader)
 	Vector2 position, Vector2 size
@@ -77,3 +82,15 @@ Physics
 
 05/06
 Particles
+
+
+/************************/
+- Afegir arbres
+- Triar quines mesh són cases per dormir
+- Triar quina mesh és el vaixell
+- Fer EntityDrop amb el vaixell (crear nou type)
+- Definir stats de GO i WIN
+- Números al Inventari
+- Arreglar transparències
+/***********************/
+
