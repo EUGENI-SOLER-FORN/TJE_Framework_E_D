@@ -18,7 +18,7 @@ StageManager::StageManager()
 
 	this->current = this->stages["menu_principal"];
 
-	PlayStage::current_stage = (PlayStage*)StageManager::current;
+	PlayStage::current_stage = (PlayStage*)this->stages["island_scene"];
 	PlayStage::player = new EntityPlayer();
 }
 
@@ -47,19 +47,19 @@ MenuStage::MenuStage(){
 
 	background->addChild(playbutton);
 	background->addChild(exitbutton);
+
+	this->stageCamera = new Camera();
+	this->stageCamera->view_matrix = Matrix44();
+	this->stageCamera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
 }
 
-void MenuStage::render() {
-	Camera* camera_2D;
-	camera_2D = new Camera();
-	camera_2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
-
-	background->render(camera_2D);
-	playbutton->render(camera_2D);
-	exitbutton->render(camera_2D);
+void MenuStage::render(Camera* camera) {
+	playbutton->render(camera);
+	exitbutton->render(camera);
+	background->render(camera);
 }
 
-void MenuStage::update() {
+void MenuStage::update(float seconds_elapsed) {
 	// TODO: give sense, see if the mouse is inside rectangle, give color, see if it is clicked inside (onButtonPressed)
 }
 
@@ -71,7 +71,6 @@ MenuStage::~MenuStage(){
 
 PlayStage::PlayStage(const char* sceneFile)
 {
-
 	this->scene = new World(sceneFile);
 	this->stageCamera = new Camera();
 

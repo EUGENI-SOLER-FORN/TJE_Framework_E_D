@@ -4,12 +4,12 @@ framework/entities/entitymesh
 	mesh lod ?
 
 framework/entities/entityplayer
-	- hereda de entitymesh
+	✅hereda de entitymesh
 	✅controls i camera
 	✅COLLISIONS! i interaccions
 
 framework/entities/entityai ?
-	- hereda de entitymesh
+	✅hereda de entitymesh
 	provar comportaments de "animals" per menjar (2 estats, moure's i escapar-se ?)
 
 game/world
@@ -85,12 +85,14 @@ Particles
 
 
 /************************/
-- Afegir arbres
-- Triar quines mesh són cases per dormir
-- Triar quina mesh és el vaixell
-- Fer EntityDrop amb el vaixell (crear nou type)
-- Definir stats de GO i WIN
-- Números al Inventari
-- Arreglar transparències
+BLENDER:
+	- Afegir arbres
+	- Triar quines mesh són cases per dormir
+	- Triar quina mesh és el vaixell
+CPP:
+	- Fer EntityDrop amb el vaixell (crear nou type)
+	- Definir stats de GO i WIN
+GIMP:
+	- Arreglar transparències
 /***********************/
 

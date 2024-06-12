@@ -55,8 +55,8 @@ public:
 	EntityUI* exitbutton;
 
 	void onButtonPressed(eButtonId buttonID) {};
-	void render();
-	void update();
+	void render(Camera* camera) override;
+	void update(float seconds_elapsed) override;
 };
 
 class PlayStage : public Stage
