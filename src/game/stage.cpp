@@ -27,6 +27,11 @@ StageManager::~StageManager(){
 }
 
 MenuStage::MenuStage(){
+
+	camera_2D = new Camera();
+	camera_2D->view_matrix = Matrix44();
+	camera_2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
+
 	float width = (float)Game::instance->window_width;
 	float height = (float)Game::instance->window_height;
 
