@@ -50,6 +50,7 @@ public:
 	MenuStage();
 	~MenuStage();
 
+	Camera* camera_2D;
 	EntityUI* background;
 	EntityUI* playbutton;
 	EntityUI* exitbutton;
