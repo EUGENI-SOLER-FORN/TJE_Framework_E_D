@@ -145,7 +145,7 @@ void EntityPlayer::update(float seconds_elapsed){
 	this->player_hunger = clamp(this->player_hunger - 0.2f * seconds_elapsed, 0.f, 100.f);
 	this->hunger->update_stat(this->player_hunger);
 
-	this->timebar->update_stat((float)((int)Game::instance->time%100));
+	this->timebar->update_stat((float)((int)Game::instance->time%300));
 }
 
 void EntityPlayer::render(Camera* camera) {

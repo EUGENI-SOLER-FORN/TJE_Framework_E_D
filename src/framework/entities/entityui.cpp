@@ -216,14 +216,13 @@ void TimeBar::update_stat(float s) {
     this->icon->material.diffuse = this->day_icon;
     if (.25f > this->stat || this->stat > .75f) this->material.diffuse = this->night_icon;
     this->icon->position.x = (this->position.x - this->width/ 2.f) + actual_width;
-    this->icon->position.y = this->position.y + 0.0125f * this->width;
+    this->icon->position.y = this->position.y + 0.0125f * this->height;
     this->icon->update(0.f);
 }
 
 void TimeBar::render(Camera* camera) {
     if (this->icon) this->icon->render(camera);
     //Restore flags
-    glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
 
@@ -239,6 +238,5 @@ void TimeBar::render(Camera* camera) {
     this->material.shader->disable();
     //Restore flags
     glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
 }

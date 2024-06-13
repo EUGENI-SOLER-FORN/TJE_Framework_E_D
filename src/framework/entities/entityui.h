@@ -108,7 +108,7 @@ public:
 		this->night_icon = Texture::Get("data/textures/statbar/night_icon.tga");
 		mat.diffuse = this->day_icon;
 		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
-		this->icon = new EntityUI(this->position + Vector2(0.f, -0.0125f*this->height ), Vector2(this->height - 0.125f * this->height), mat);
+		this->icon = new EntityUI(this->position + Vector2(0.f, 0.0125f*this->height ), Vector2(this->height - 0.125f * this->height), mat);
 	};
 	Texture* day_icon;
 	Texture* night_icon;
