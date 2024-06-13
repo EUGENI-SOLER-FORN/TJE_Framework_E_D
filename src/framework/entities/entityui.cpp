@@ -213,11 +213,16 @@ void TimeBar::update_stat(float s) {
     this->stat = s / 100.f;
     float actual_width = this->width * this->stat;
     if (!this->icon) return;
-    this->icon->material.diffuse = this->day_icon;
-    if (.25f > this->stat || this->stat > .75f) this->material.diffuse = this->night_icon;
+    
+    this->icon->regularTexture = this->night_icon;
+    if (.75f > this->stat && this->stat > .25f) this->icon->regularTexture = this->day_icon;
+    
+    
     this->icon->position.x = (this->position.x - this->width/ 2.f) + actual_width;
     this->icon->position.y = this->position.y + 0.0125f * this->height;
     this->icon->update(0.f);
+
+    World::changeSky(s);
 }
 
 void TimeBar::render(Camera* camera) {

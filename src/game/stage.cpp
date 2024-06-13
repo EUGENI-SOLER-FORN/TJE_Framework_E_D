@@ -112,12 +112,21 @@ void PlayStage::updateSceneCamera(float seconds_elapsed){
 }
 
 void PlayStage::render(Camera* camera){
+	if (PlayStage::player->sleep_cooldown) {
+		
+		PlayStage::player->render(camera);
+		return;
+	}
 	this->scene->render(camera); 
 	PlayStage::player->render(camera);
 }
 
 void PlayStage::update(float seconds_elapsed){
-	this->scene->update(seconds_elapsed); 
+	if (PlayStage::player->sleep_cooldown) {
+		PlayStage::player->update(seconds_elapsed);
+		return;
+	}
+	this->scene->update(seconds_elapsed);
 	PlayStage::player->update(seconds_elapsed); 
 	this->updateSceneCamera(seconds_elapsed);
 }

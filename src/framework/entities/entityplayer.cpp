@@ -5,7 +5,7 @@
 EntityPlayer::EntityPlayer() : EntityMesh(){
 	this->name = "player";
 	this->model = Matrix44::IDENTITY;
-	this->model.setTranslation(this->player_height + Vector3(5.f, 10.f, 5.f));
+	this->model.setTranslation(this->player_height + Vector3(0.f, 10.f, 0.f));
 	this->inventory = new Inventory();
 	this->point = new PointCross();
 	this->minimap = new MiniMap();
@@ -52,9 +52,19 @@ EntityDrop* EntityPlayer::getEntityPointingAt(Camera* camera) {
 }
 
 void EntityPlayer::update(float seconds_elapsed){
+	if (this->sleep_cooldown) {
+		this->sleep_cooldown = clamp(this->sleep_cooldown - seconds_elapsed, 0.f, 3.f);
+		return;
+	}
+
+	// @TODO : create loose and win stage
+	if (this->days_counter == 30) StageManager::goTo("lose_stage");
+
 	// Check if we are in a playstage, if not return;
 	PlayStage* ps = dynamic_cast<PlayStage*>(Game::instance->manager->current);
 	if (!ps) return;
+	// @TODO : create loose and win stage
+	if(ps->scene->boat) if (ps->scene->boat->health >= 100.f) StageManager::goTo("win_stage");
 
 	// Set some variables
 	float moving_speed = this->player_speed;
@@ -84,7 +94,7 @@ void EntityPlayer::update(float seconds_elapsed){
 	for (auto entity : current_world->root->children) {
 		EntityCollider* entity_collider = dynamic_cast<EntityCollider*>(entity);
 		EntityDrop* entity_drop = dynamic_cast<EntityDrop*>(entity);
-		if (entity_collider) entity_collider->checkPlayerCollisions(possible_position, wall_collisions, floor_collisions);
+		if (entity_collider && entity_collider->isVisible) entity_collider->checkPlayerCollisions(possible_position, wall_collisions, floor_collisions);
 		if (entity_drop && entity_drop->isVisible) entity_drop->checkPlayerCollisions(possible_position, wall_collisions, floor_collisions, TREE);
 	}
 	// Avoid collisions with walls (GLITCHY)
@@ -144,8 +154,11 @@ void EntityPlayer::update(float seconds_elapsed){
 	this->stamina->update_stat(this->player_sleepiness);
 	this->player_hunger = clamp(this->player_hunger - 0.2f * seconds_elapsed, 0.f, 100.f);
 	this->hunger->update_stat(this->player_hunger);
-
-	this->timebar->update_stat((float)((int)Game::instance->time%300));
+	
+	
+	float t = (float)((int)Game::instance->time % World::days_length);
+	this->days_counter = (int)Game::instance->time / World::days_length;
+	this->timebar->update_stat(t);
 }
 
 void EntityPlayer::render(Camera* camera) {
@@ -194,12 +207,26 @@ void EntityPlayer::render(Camera* camera) {
 			break;
 		case TREE:
 			if (this->player_sleepiness > 10.f) drawText(w - 20.f, h * 2.f - this->inventory->background_size.y - 2.f * this->minimap->margin, "Press 'F' to cut the tree down", Vector3(1.f), 2.f);
-			else drawText(w - 40.f, h + 20.f, "NOT ENOUGH STAMINA, REST!", Vector3(1.f, 0.f, 0.f));
+			else drawText(w - 40.f, h + 20.f, "NOT ENOUGH STAMINA, REST!", Vector3(1.f, 0.f, 0.f), 2.f);
 			break;
 		case BOAT:
 			if (this->inventory->elements[WOOD]) drawText(w - 20.f, h * 2.f - this->inventory->background_size.y - 2.f * this->minimap->margin, "Press 'F' to repair the boat", Vector3(1.f), 2.f);
-			else drawText(w - 40.f, h + 20.f, "GO FIND SOME MORE WOOD!", Vector3(1.f, 0.f, 0.f));
+			else drawText(w - 40.f, h + 20.f, "GO FIND SOME MORE WOOD!", Vector3(1.f, 0.f, 0.f), 2.f);
 			break;
 		}
 	}
+
+	drawText(w - 80.f, h, std::to_string(this->days_counter), Vector3(1.f));
+
+	if (this->sleep_cooldown) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		drawText(w - 40.f, h, "REST A BIT AND KEEP REPAIRING!", Vector3(1.f), 3.f);
+	}
+}
+
+void EntityPlayer::sleep() {
+	sleep_cooldown = 3.f;
+	this->player_sleepiness = std::min(100.0f, this->player_sleepiness + 20.0f);
+	this->days_counter += 1;
+	Game::instance->time = this->days_counter * World::days_length;
 }

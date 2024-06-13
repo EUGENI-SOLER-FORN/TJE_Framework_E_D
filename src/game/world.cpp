@@ -3,6 +3,8 @@
 #include "framework/entities/entitycollider.h"
 
 EntityMesh* World::sky = nullptr;
+Texture* World::day_sky = nullptr;
+Texture* World::night_sky = nullptr;
 
 World::World(const char* sceneFile) {
 	this->root = new Entity();
@@ -14,17 +16,25 @@ World::World(const char* sceneFile) {
 void World::loadSky(){
 	Material sky_material;
 	sky_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
-	Texture* sky_texture = new Texture();
-	sky_texture->loadCubemap("sky", {
-		"data/textures/skybox/right.png",
-		"data/textures/skybox/left.png",
-		"data/textures/skybox/bottom.png",
-		"data/textures/skybox/top.png",
-		"data/textures/skybox/front.png",
-		"data/textures/skybox/back.png"
+	World::day_sky = new Texture();
+	day_sky->loadCubemap("day", {
+		"data/textures/skybox/day_left.png",
+		"data/textures/skybox/day_right.png",
+		"data/textures/skybox/day_bottom.png",
+		"data/textures/skybox/day_up.png",
+		"data/textures/skybox/day_front.png",
+		"data/textures/skybox/day_back.png"
 		});
-	sky_material.diffuse = sky_texture;
-	
+	World::night_sky = new Texture();
+	night_sky->loadCubemap("night", {
+		"data/textures/skybox/night_left.png",
+		"data/textures/skybox/night_right.png",
+		"data/textures/skybox/night_bottom.png",
+		"data/textures/skybox/night_up.png",
+		"data/textures/skybox/night_front.png",
+		"data/textures/skybox/night_back.png"
+		});
+	sky_material.diffuse = day_sky;
 	World::sky = new EntityMesh(Mesh::Get("data/meshes/box.ASE"), sky_material, "sky");
 }
 // Code taken from AG:
@@ -118,6 +128,7 @@ bool World::parseScene(const char* filename, Entity* root)
 			new_entity->type = BOAT;
 			static_cast<EntityDrop*>(new_entity)->healthbar->setBoatIcon();
 			static_cast<EntityDrop*>(new_entity)->health = 0.01f;
+			this->boat = static_cast<EntityDrop*>(new_entity);
 		}
 		else {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());

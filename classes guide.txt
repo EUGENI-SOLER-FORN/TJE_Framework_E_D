@@ -91,11 +91,11 @@ BLENDER:
 	- Triar quina mesh és el vaixell
 CPP:
 	✅Fer EntityDrop amb el vaixell (crear nou type)
-	- Definir stats de GO i WIN
-	- Dia/nit
+	✅Definir stats de GO i WIN
+	✅Dia/nit
 GIMP:
-	- Arreglar transparències
+	- Arreglar transparències menú
 	- Textura arbre
-	- Dia/nit
+	✅Dia/nit
 /***********************/
 
