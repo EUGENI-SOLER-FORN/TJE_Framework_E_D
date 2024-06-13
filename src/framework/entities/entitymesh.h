@@ -10,8 +10,7 @@ enum eEntityType {
 	NONE_TYPE = 0,
 	FLOOR = 1,
 	ENEMY = 2,
-	TREE = 3,
-	HOUSE = 4
+	TREE = 3, HOUSE = 4, BOAT = 5
 };
 
 class EntityMesh : public Entity {

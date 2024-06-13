@@ -88,13 +88,31 @@ public:
 		this->stat = s/100.f;
 	};
 
-	EntityUI* icon;
+	EntityUI* icon = nullptr;
 	void setSleepIcon();
 	void setHungerIcon();
 	void setTreeIcon();
+	void setBoatIcon();
 
 	void update_stat(float s);
 	void render(Camera* camera) override;
 
 	~StatBar() { delete icon; };
+};
+
+class TimeBar : public StatBar {
+public:
+	TimeBar(float s, const Vector2& position, const Vector2& size, const Material& material) : StatBar(s, position, size, material) {
+		Material mat;
+		this->day_icon = Texture::Get("data/textures/statbar/day_icon.tga");
+		this->night_icon = Texture::Get("data/textures/statbar/night_icon.tga");
+		mat.diffuse = this->day_icon;
+		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		this->icon = new EntityUI(this->position + Vector2(0.f, -0.0125f*this->height ), Vector2(this->height - 0.125f * this->height), mat);
+	};
+	Texture* day_icon;
+	Texture* night_icon;
+
+	void render(Camera* camera) override;
+	void update_stat(float s);
 };

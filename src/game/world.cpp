@@ -83,6 +83,7 @@ bool World::parseScene(const char* filename, Entity* root)
 
 		size_t tree_tag = data.first.find("@tree");
 		size_t house_tag = data.first.find("@house");
+		size_t boat_tag = data.first.find("@boat");
 
 		if (tree_tag != std::string::npos) {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
@@ -93,6 +94,8 @@ bool World::parseScene(const char* filename, Entity* root)
 			new_entity = new EntityDrop(mesh, mat);
 			new_entity->name = "Tree";
 			new_entity->type = TREE;
+			static_cast<EntityDrop*>(new_entity)->healthbar->setTreeIcon();
+			
 		}
 		else if (house_tag != std::string::npos) {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
@@ -103,6 +106,18 @@ bool World::parseScene(const char* filename, Entity* root)
 			new_entity = new EntityDrop(mesh, mat);
 			new_entity->name = "House";
 			new_entity->type = HOUSE;
+		} 
+		else if (house_tag != std::string::npos) {
+			Mesh* mesh = Mesh::Get(mesh_name.c_str());
+			// Create a different type of entity
+			mat.diffuse = Texture::Get("data/textures/colormap.png");
+			mat.color = mat.diffuse ? Vector4(0.9f, 0.9f, 0.9f, 1.0f) : Vector4(0.0f);
+			mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+			new_entity = new EntityDrop(mesh, mat);
+			new_entity->name = "Boat";
+			new_entity->type = BOAT;
+			static_cast<EntityDrop*>(new_entity)->healthbar->setBoatIcon();
+			static_cast<EntityDrop*>(new_entity)->health = 0.01f;
 		}
 		else {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());

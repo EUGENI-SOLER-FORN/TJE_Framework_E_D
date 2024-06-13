@@ -56,7 +56,7 @@ bool EntityCollider::checkPlayerCollisions(const Vector3& target_pos, std::vecto
 void EntityDrop::hit(){
 	if (!this->hitpoints) return;
 	this->hitpoints -= 1;
-	this->health = 0.01f*(this->hitpoints * 20.f);
+	this->health = (float)this->hitpoints/5.f;
 	if (this->health == 0.f) {
 		this->changeVisibility();
 		PlayStage::player->inventory->add(WOOD);
@@ -64,18 +64,22 @@ void EntityDrop::hit(){
 	std::cout << health <<  std::endl;
 }
 
-void EntityDrop::render(Camera* camera){
-	// same as EntityMesh, but set the mask to the shader if it's being pointed at:
-	if (!this->isVisible || !this->mesh || !this->material.shader) return;
-
-	if (this->healthbar && this->type == TREE) {
-		this->healthbar->render(PlayStage::player->player_camera2D);
+void EntityDrop::repair(){
+	if (PlayStage::player->inventory->elements[WOOD]) {
+		PlayStage::player->inventory->substract(WOOD);
+		this->health += 0.1f;
 	}
+}
 
+void EntityDrop::render(Camera* camera){
+	// same as EntityMesh, but set the mask to the shader if it's being pointed at and render healthbar:
+	if (!this->isVisible || !this->mesh || !this->material.shader) return;
 	const Matrix44& globalMat = this->getGlobalMatrix();
 	const Vector3& mesh_box_center = globalMat * this->mesh->box.center;
 	const Vector3& mesh_box_halfsize = globalMat * this->mesh->box.halfsize;
-	if (!this->isInstanced && !camera->testBoxInFrustum(mesh_box_center, mesh_box_halfsize) || camera->eye.distance(mesh_box_center) > 200.0f)	return;
+	if (!camera->testBoxInFrustum(mesh_box_center, mesh_box_halfsize) || camera->eye.distance(mesh_box_center) > 100.0f)	return;
+
+	if (this->healthbar && !(camera->eye.distance(mesh_box_center) > 10.0f)) this->healthbar->render(PlayStage::player->player_camera2D);
 
 	this->material.shader->enable();
 	// Set color default
@@ -123,13 +127,10 @@ void EntityDrop::update(float seconds_elapsed){
 };
 
 EntityDrop::EntityDrop(Mesh* mesh, Material& material) : EntityCollider(mesh, material) {
-	this->layer = TREE; this->name = "Tree";
-
 	float h = (float)Game::instance->window_height / 2.f;
 	float w = (float)Game::instance->window_width / 2.f;
 	Material mat;
 	mat.color = Vector4(0.f, 1.f, 0.f, 1.f);
 	mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
 	this->healthbar = new StatBar(this->health, Vector2(w + 50.f, h), Vector2(25.f, 200.f), mat);
-	this->healthbar->setTreeIcon(); 
 }

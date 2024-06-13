@@ -4,9 +4,9 @@
 
 PlayStage* PlayStage::current_stage = nullptr;
 EntityPlayer* PlayStage::player = nullptr;
+StageManager* StageManager::instance = nullptr;
 
-StageManager::StageManager()
-{
+StageManager::StageManager() {
 	// TODO: create loading screen
 	// this->stages["loading"] = new LoadingStage();
 	
@@ -20,6 +20,8 @@ StageManager::StageManager()
 
 	PlayStage::current_stage = (PlayStage*)this->stages["island_scene"];
 	PlayStage::player = new EntityPlayer();
+	
+	StageManager::instance = this;
 }
 
 StageManager::~StageManager(){
@@ -66,6 +68,8 @@ void MenuStage::render(Camera* camera) {
 
 void MenuStage::update(float seconds_elapsed) {
 	// TODO: give sense, see if the mouse is inside rectangle, give color, see if it is clicked inside (onButtonPressed)
+	// provisional
+	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) StageManager::instance->goTo("island_scene");
 }
 
 MenuStage::~MenuStage(){

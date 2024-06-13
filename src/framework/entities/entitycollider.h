@@ -32,6 +32,7 @@ public:
 	StatBar* healthbar;
 
 	void hit();
+	void repair();
 	void render(Camera* camera) override;
 	void update(float seconds_elapsed) override;
 };

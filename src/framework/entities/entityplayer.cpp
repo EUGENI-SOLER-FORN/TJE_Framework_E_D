@@ -11,7 +11,8 @@ EntityPlayer::EntityPlayer() : EntityMesh(){
 	this->minimap = new MiniMap();
 
 	float h = (float)Game::instance->window_height / 2.f;
-	Material mat1, mat2;
+	float w = (float)Game::instance->window_width / 2.f;
+	Material mat1, mat2, mat3;
 	mat1.color = Vector4(0.f, 1.f, 0.f, 1.f);
 	mat1.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
 	this->hunger = new StatBar(this->player_hunger, Vector2(30.f, h), Vector2(25.f, 200.f), mat1);
@@ -20,6 +21,10 @@ EntityPlayer::EntityPlayer() : EntityMesh(){
 	mat2.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
 	this->stamina = new StatBar(this->player_sleepiness, Vector2(60.f, h), Vector2(25.f, 200.f), mat2);
 	this->stamina->setSleepIcon();
+
+	mat3.color = Vector4(0.f, 0.f, 1.f, 1.f);
+	mat3.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/timebar.fs");
+	this->timebar = new TimeBar(Game::instance->time, Vector2(w, 96.f + 35.f), Vector2(300.f, 25.f), mat3);
 
 	this->player_camera2D = new Camera();
 	this->player_camera2D->view_matrix = Matrix44();
@@ -38,7 +43,7 @@ EntityDrop* EntityPlayer::getEntityPointingAt(Camera* camera) {
 		EntityDrop* entity_drop = dynamic_cast<EntityDrop*>(entity);
 		if (!entity_drop) continue;
 		if (!entity_drop->isVisible) continue;
-		if (entity_drop->mesh->testRayCollision(entity_drop->model, camera->eye, camera_front, col_point, col_normal, 1.0f, false)) {
+		if (entity_drop->mesh->testRayCollision(entity_drop->model, camera->eye, camera_front, col_point, col_normal, 1.5f, false)) {
 			entity_drop->mask = 1.f;
 			return entity_drop;
 		}
@@ -128,6 +133,9 @@ void EntityPlayer::update(float seconds_elapsed){
 			case HOUSE:
 				if (Input::wasKeyPressed(SDL_SCANCODE_F)) this->sleep();
 				break;
+			case BOAT:
+				if (Input::wasKeyPressed(SDL_SCANCODE_F)) this->pointingAt->repair();
+				break;
 		}
 	}
 
@@ -136,6 +144,8 @@ void EntityPlayer::update(float seconds_elapsed){
 	this->stamina->update_stat(this->player_sleepiness);
 	this->player_hunger = clamp(this->player_hunger - 0.2f * seconds_elapsed, 0.f, 100.f);
 	this->hunger->update_stat(this->player_hunger);
+
+	this->timebar->update_stat((float)((int)Game::instance->time%100));
 }
 
 void EntityPlayer::render(Camera* camera) {
@@ -171,18 +181,25 @@ void EntityPlayer::render(Camera* camera) {
 	this->hunger->render(this->player_camera2D);
 	this->stamina->render(this->player_camera2D);
 	this->inventory->render(this->player_camera2D);
+	this->timebar->render(this->player_camera2D);
 	this->point->render(this->player_camera2D);
 	this->minimap->render();
 
 	float w = (float)Game::instance->window_width / 2.f;
 	float h = (float)Game::instance->window_height / 2.f;
 	if (this->pointingAt) {
-		if (this->pointingAt->type == HOUSE) {
+		switch (this->pointingAt->type) {
+		case HOUSE:
 			drawText(w - 30.f, h - this->inventory->background_size.y - 2.f * this->minimap->margin, "Press 'F' to restore stamina", Vector3(1.f), 2.f);
-		}
-		else if (this->pointingAt->type == TREE) {
-			if(this->player_sleepiness > 10.f) drawText(w - 20.f, h * 2.f - this->inventory->background_size.y - 2.f * this->minimap->margin, "Press 'F' to cut the tree down", Vector3(1.f), 2.f);
+			break;
+		case TREE:
+			if (this->player_sleepiness > 10.f) drawText(w - 20.f, h * 2.f - this->inventory->background_size.y - 2.f * this->minimap->margin, "Press 'F' to cut the tree down", Vector3(1.f), 2.f);
 			else drawText(w - 40.f, h + 20.f, "NOT ENOUGH STAMINA, REST!", Vector3(1.f, 0.f, 0.f));
+			break;
+		case BOAT:
+			if (this->inventory->elements[WOOD]) drawText(w - 20.f, h * 2.f - this->inventory->background_size.y - 2.f * this->minimap->margin, "Press 'F' to repair the boat", Vector3(1.f), 2.f);
+			else drawText(w - 40.f, h + 20.f, "GO FIND SOME MORE WOOD!", Vector3(1.f, 0.f, 0.f));
+			break;
 		}
 	}
 }

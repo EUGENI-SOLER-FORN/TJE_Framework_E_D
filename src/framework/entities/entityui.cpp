@@ -151,7 +151,9 @@ void MiniMap::render(){
 }
 
 void StatBar::render(Camera* camera) {
-    this->icon->render(camera);
+    if (this->icon) this->icon->render(camera);
+    
+
     //Restore flags
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
@@ -189,11 +191,54 @@ void StatBar::setTreeIcon(){
     mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
     this->icon = new EntityUI(this->position + Vector2(0.0125f * this->width, 0.f), Vector2(this->width - 0.125f * this->width), mat);
 }
+void StatBar::setBoatIcon() {
+    this->height = 100.f;
+    Material mat;
+    mat.diffuse = Texture::Get("data/textures/statbar/boat_icon.tga");
+    mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+    this->icon = new EntityUI(this->position + Vector2(0.0125f * this->width, 0.f), Vector2(this->width - 0.125f * this->width), mat);
+}
 void StatBar::update_stat(float s) {
     this->mesh->createQuad(this->position.x, this->position.y, this->width, this->height, true);
     this->stat = s / 100.f;
     float actual_height = this->height * this->stat;
+    if (!this->icon) return;
     this->icon->position.y = (this->position.y - this->height / 2.f) + actual_height;
     this->icon->position.x = this->position.x + 0.0125f * this->width;
     this->icon->update(0.f);
+}
+
+void TimeBar::update_stat(float s) {
+    this->mesh->createQuad(this->position.x, this->position.y, this->width, this->height, true);
+    this->stat = s / 100.f;
+    float actual_width = this->width * this->stat;
+    if (!this->icon) return;
+    this->icon->material.diffuse = this->day_icon;
+    if (.25f > this->stat || this->stat > .75f) this->material.diffuse = this->night_icon;
+    this->icon->position.x = (this->position.x - this->width/ 2.f) + actual_width;
+    this->icon->position.y = this->position.y + 0.0125f * this->width;
+    this->icon->update(0.f);
+}
+
+void TimeBar::render(Camera* camera) {
+    if (this->icon) this->icon->render(camera);
+    //Restore flags
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+
+    this->material.shader->enable();
+
+    this->material.shader->setUniform("u_model", this->model);
+    this->material.shader->setUniform("u_color", this->material.color);
+    this->material.shader->setUniform("u_mask", this->stat);
+    this->material.shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+
+    this->mesh->render(GL_TRIANGLES);
+
+    this->material.shader->disable();
+    //Restore flags
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
 }

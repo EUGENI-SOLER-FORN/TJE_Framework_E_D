@@ -86,13 +86,16 @@ Particles
 
 /************************/
 BLENDER:
-	- Afegir arbres
-	- Triar quines mesh són cases per dormir
+	✅Afegir arbres
+	✅Triar quines mesh són cases per dormir
 	- Triar quina mesh és el vaixell
 CPP:
-	- Fer EntityDrop amb el vaixell (crear nou type)
+	✅Fer EntityDrop amb el vaixell (crear nou type)
 	- Definir stats de GO i WIN
+	- Dia/nit
 GIMP:
 	- Arreglar transparències
+	- Textura arbre
+	- Dia/nit
 /***********************/
 

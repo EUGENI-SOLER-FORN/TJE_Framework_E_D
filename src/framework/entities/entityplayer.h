@@ -15,8 +15,8 @@ public:
 	};
 	
 	// general attributes
-	const Vector3 player_height = Vector3(0.f, 1.f, 0.f);
-	const float sphere_radius = .3f;
+	const Vector3 player_height = Vector3(0.f, .75f, 0.f);
+	const float sphere_radius = .25f;
 
 	// stats of the player
 	const float player_speed = 2.f;
@@ -31,10 +31,12 @@ public:
 	MiniMap* minimap;
 	StatBar* stamina;
 	StatBar* hunger;
+	TimeBar* timebar;
 
 	// methods to manage hunger and sleep
-	void eat() { this->player_hunger = std::min(100.0f, this->player_hunger + 20.0f); }
-	void sleep() { this->player_sleepiness = std::min(100.0f, this->player_sleepiness + 20.0f); }
+	void eat() { this->player_hunger = std::min(100.0f, this->player_hunger + 20.0f); };
+	void sleep() { this->player_sleepiness = std::min(100.0f, this->player_sleepiness + 20.0f); };
+	float sleep_cooldown = 0.f;
 
 	// For attacks
 	EntityDrop* getEntityPointingAt(Camera* camera);
