@@ -6,17 +6,24 @@ PlayStage* PlayStage::current_stage = nullptr;
 EntityPlayer* PlayStage::player = nullptr;
 StageManager* StageManager::instance = nullptr;
 
+<<<<<<< Updated upstream
 StageManager::StageManager() {
 	// TODO: create loading screen
 	// this->stages["loading"] = new LoadingStage();
 	
+=======
+StageManager::StageManager()
+{
+	this->stages["video_intro"] = new VideoStage();
+>>>>>>> Stashed changes
 	this->stages["menu_principal"] = new MenuStage();
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
 
 	// TODO: create outro/restart stage
 	// this->stages["final"] = new PlayStage("data/scenes/island_scene.scene");
 
-	this->current = this->stages["menu_principal"];
+	this->current = this->stages["video_intro"];
+	this->goTo(this->stages["video_intro"]);
 
 	PlayStage::current_stage = (PlayStage*)this->stages["island_scene"];
 	PlayStage::player = new EntityPlayer();
@@ -24,40 +31,139 @@ StageManager::StageManager() {
 	StageManager::instance = this;
 }
 
+void StageManager::update(float seconds_elapsed) { 
+	this->current->update(seconds_elapsed); 
+	if (this->current == this->stages["video_intro"]) {
+		if (this->current->go_to_next_stage == true) {
+			this->current = this->stages["menu_principal"];
+			this->goTo(this->stages["menu_principal"]);
+		}
+	}
+	else if (this->current == this->stages["menu_principal"]) {
+		if (this->current->go_to_next_stage == true) {
+			this->current = this->stages["island_scene"];
+			this->goTo(this->stages["island_scene"]);
+		}
+	}
+};
+
 StageManager::~StageManager(){
 	for (auto s : this->stages) { delete s.second; }
 }
 
-MenuStage::MenuStage(){
-
-	camera_2D = new Camera();
-	camera_2D->view_matrix = Matrix44();
-	camera_2D->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
-
-	float width = (float)Game::instance->window_width;
-	float height = (float)Game::instance->window_height;
-
-	Material background_material;
-	background_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
-	background_material.diffuse = Texture::Get("data/textures/menu/background.png");
-	background = new EntityUI(Vector2(0.5f * width, 0.5f * height), Vector2(width, height), background_material);
-
-	Material play_material;
-	play_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
-	play_material.diffuse = Texture::Get("data/textures/menu/play.png");
-	playbutton = new EntityUI(Vector2(10.0f, 0.5f * height), Vector2(30.0f), play_material);
-
-	Material exit_material;
-	exit_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
-	exit_material.diffuse = Texture::Get("data/textures/menu/exit.png");
-	exitbutton = new EntityUI(Vector2(20.0f, 0.5f * height), Vector2(30.0f), exit_material);
-
-	background->addChild(playbutton);
-	background->addChild(exitbutton);
+VideoStage::VideoStage() 
+{
 
 	this->stageCamera = new Camera();
 	this->stageCamera->view_matrix = Matrix44();
 	this->stageCamera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
+
+	Vector2 position = Vector2(0.5f * Game::instance->window_width, 0.5f * Game::instance->window_height);
+	Vector2 size = Vector2((float)Game::instance->window_width, (float)Game::instance->window_height);
+
+	for (int i = 4; i < 10; i+=4)
+	{
+		Material mat;
+		std::string frame_path = "data/video/frames_png/frame_000" + std::to_string(i) + ".png"; 
+		mat.diffuse = Texture::Get(frame_path.c_str());
+		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		video_frames.push_back(new EntityUI(position, size, mat));
+	}
+	for (int i = 12; i < 100; i+=4)
+	{
+		Material mat;
+		std::string frame_path = "data/video/frames_png/frame_00" + std::to_string(i) + ".png";
+		mat.diffuse = Texture::Get(frame_path.c_str());
+		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		video_frames.push_back(new EntityUI(position, size, mat));
+	}
+	for (int i = 100; i < 1000; i+=4)
+	{
+		Material mat;
+		std::string frame_path = "data/video/frames_png/frame_0" + std::to_string(i) + ".png";
+		mat.diffuse = Texture::Get(frame_path.c_str());
+		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		video_frames.push_back(new EntityUI(position, size, mat));
+	}
+	for (int i = 1000; i <= num_frames; i+=4)
+	{
+		Material mat;
+		std::string frame_path = "data/video/frames_png/frame_" + std::to_string(i) + ".png";
+		mat.diffuse = Texture::Get(frame_path.c_str());
+		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		video_frames.push_back(new EntityUI(position, size, mat));
+	}
+}
+
+void VideoStage::render(Camera* camera)
+{
+	video_frames[current_frame]->render(camera);
+}
+
+void VideoStage::update(float seconds_elapsed)
+{
+	if (current_frame < (num_frames/4)-1)
+	{
+		current_frame = current_frame + 1;
+	}
+	else {
+		go_to_next_stage = true;
+		video_audio->Stop(video_sound);
+	}
+	for (int i = 0; i < 270000000; ++i) {}
+}
+
+void VideoStage::onEnter(Stage* prev_stage) {
+	video_audio->Init();
+	video_audio->Get("data/audio/intro_audio.wav");
+	video_sound = video_audio->Play("data/audio/intro_audio.wav", 0.5, true);
+}
+
+void VideoStage::onLeave(Stage* next_stage) {
+	// video_audio->Stop(video_sound);
+}
+
+VideoStage::~VideoStage()
+{
+	for (auto frame : video_frames)
+	{
+		delete frame;
+	}
+	video_frames.clear();
+}
+
+MenuStage::MenuStage() {
+
+	this->stageCamera = new Camera();
+	this->stageCamera->view_matrix = Matrix44();
+	this->stageCamera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
+
+	float width = (float)Game::instance->window_width;
+	float height = (float)Game::instance->window_height;
+	Vector2 screen_center = Vector2(0.5f * width, 0.5f * height);
+
+	Material background_material;
+	background_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+	background_material.diffuse = Texture::Get("data/textures/menu/menu_background.tga");
+	background = new EntityUI(screen_center, Vector2(width, height), background_material);
+	background->setType(BACKGROUND);
+
+	Material play_material;
+	play_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+	play_material.diffuse = Texture::Get("data/textures/menu/play.tga");
+	playbutton = new EntityUI(Vector2(250.0f, 70.0f), Vector2(200.0f, 80.0f), play_material);
+	playbutton->setHoverTexture(Texture::Get("data/textures/menu/play2.tga"));
+	playbutton->setType(PLAY_BUTTON);
+
+	Material exit_material;
+	exit_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+	exit_material.diffuse = Texture::Get("data/textures/menu/exit.tga");
+	exitbutton = new EntityUI(Vector2(550.0f, 70.0f), Vector2(200.0f, 80.0f), exit_material);
+	exitbutton->setHoverTexture(Texture::Get("data/textures/menu/exit2.tga"));
+	exitbutton->setType(EXIT_BUTTON);
+
+	background->addChild(playbutton);
+	background->addChild(exitbutton);
 }
 
 void MenuStage::render(Camera* camera) {
@@ -67,9 +173,46 @@ void MenuStage::render(Camera* camera) {
 }
 
 void MenuStage::update(float seconds_elapsed) {
+<<<<<<< Updated upstream
 	// TODO: give sense, see if the mouse is inside rectangle, give color, see if it is clicked inside (onButtonPressed)
 	// provisional
 	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) StageManager::instance->goTo("island_scene");
+=======
+	playbutton->update(seconds_elapsed);
+	exitbutton->update(seconds_elapsed);
+	background->update(seconds_elapsed);
+
+	if (playbutton->isHover() && Input::isMousePressed(SDL_BUTTON_LEFT)) {
+		onButtonPressed(playbutton->type);
+	}
+	else if (exitbutton->isHover() && Input::isMousePressed(SDL_BUTTON_LEFT)) {
+		onButtonPressed(exitbutton->type);
+	}
+}
+
+void MenuStage::onButtonPressed(eButtonId buttonID) {
+	switch (buttonID) {
+	case PLAY_BUTTON:
+		go_to_next_stage = true;
+		menu_audio->Stop(menu_sound);
+		break;
+	case EXIT_BUTTON:
+		exit(0);
+		break;
+	default:
+		break;
+	}
+}
+
+void MenuStage::onEnter(Stage* prev_stage) {
+	menu_audio->Init();
+	menu_audio->Get("data/audio/menu_audio.wav");
+	menu_sound = menu_audio->Play("data/audio/menu_audio.wav", 0.5, true);
+}
+
+void MenuStage::onLeave(Stage* next_stage) {
+	// menu_audio->Stop(menu_sound);
+>>>>>>> Stashed changes
 }
 
 MenuStage::~MenuStage(){
@@ -134,4 +277,14 @@ void PlayStage::update(float seconds_elapsed){
 	this->scene->update(seconds_elapsed);
 	PlayStage::player->update(seconds_elapsed); 
 	this->updateSceneCamera(seconds_elapsed);
+}
+
+void PlayStage::onEnter(Stage* prev_stage) {
+	play_audio->Init();
+	play_audio->Get("data/audio/play_audio.wav");
+	play_sound = play_audio->Play("data/audio/play_audio.wav", 1.0, true);
+}
+
+void PlayStage::onLeave(Stage* next_stage) {
+	// play_audio->Stop(play_sound);
 }

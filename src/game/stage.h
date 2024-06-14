@@ -8,21 +8,21 @@
 
 class Stage{
 public:
-	Stage() {};
+	Stage() { };
 	~Stage() { delete this->stageCamera; };
 
-	virtual void onEnter(Stage* prev_stage) {
-		Audio* game_audio;
-		game_audio->Init();
-		game_audio->Get("data/audio/island_audio.wav");
-		game_audio->Play("data/audio/island_audio.wav", 0.5, true);
-	};
+	virtual void onEnter(Stage* prev_stage) {};
 	virtual void onLeave(Stage* next_stage) {};
 
-	Camera* stageCamera;
+	Camera* stageCamera = new Camera();
 	float camera_yaw = 0.f;
 	float camera_pitch = 0.f;
+<<<<<<< Updated upstream
 	float camera_speed = 1.5f;
+=======
+	float camera_speed = 3.f;
+	bool go_to_next_stage = false;
+>>>>>>> Stashed changes
 
 	virtual void render(Camera* camera) {};
 	virtual void update(float seconds_elapsed) {};
@@ -50,7 +50,25 @@ public:
 	};
 	
 	void render() { this->current->render(this->current->stageCamera); };
-	void update(float seconds_elapsed) { this->current->update(seconds_elapsed); };
+	void update(float seconds_elapsed);
+};
+
+class VideoStage : public Stage
+{
+public:
+	VideoStage(); 
+	~VideoStage();
+
+	Audio* video_audio;
+	HCHANNEL video_sound;
+	int num_frames = 1716; 
+	int current_frame = 0;
+	std::vector<EntityUI*> video_frames; 
+
+	void onEnter(Stage* prev_stage) override;
+	void onLeave(Stage* next_stage) override;
+	void render(Camera* camera) override; 
+	void update(float seconds_elapsed) override; 
 };
 
 class MenuStage : public Stage
@@ -59,12 +77,15 @@ public:
 	MenuStage();
 	~MenuStage();
 
-	Camera* camera_2D;
+	Audio* menu_audio;
+	HCHANNEL menu_sound;
 	EntityUI* background;
 	EntityUI* playbutton;
 	EntityUI* exitbutton;
 
-	void onButtonPressed(eButtonId buttonID) {};
+	void onEnter(Stage* prev_stage) override;
+	void onLeave(Stage* next_stage) override;
+	void onButtonPressed(eButtonId buttonID);
 	void render(Camera* camera) override;
 	void update(float seconds_elapsed) override;
 };
@@ -75,6 +96,8 @@ public:
 	PlayStage(const char* sceneFile);
 	~PlayStage() { delete this->scene; };
 
+	Audio* play_audio;
+	HCHANNEL play_sound;
 	static PlayStage* current_stage;
 	static EntityPlayer* player;
 	
@@ -82,8 +105,12 @@ public:
 	void updateSceneCamera(float seconds_elapsed);
 
 	void onEnter(Stage* prev_stage) override;
+<<<<<<< Updated upstream
 	void onLeave(Stage* prev_stage) override;
 
+=======
+	void onLeave(Stage* next_stage) override;
+>>>>>>> Stashed changes
 	void render(Camera* camera) override;
 	void update(float seconds_elapsed) override;
 };

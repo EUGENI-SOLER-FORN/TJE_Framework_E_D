@@ -6,9 +6,7 @@
 #include "graphics/texture.h"
 #include "graphics/fbo.h"
 #include "graphics/shader.h"
-
 #include <cmath>
-
 
 //some globals
 Mesh* mesh = NULL;
@@ -33,16 +31,23 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	elapsed_time = 0.0f;
 	mouse_locked = false;
 
+	// Create our camera
+	camera = new Camera();
+	camera->lookAt(Vector3(0.f, 100.f, 100.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)); //position the camera and point to 0,0,0
+	camera->setPerspective(70.f, window_width / (float)window_height, 0.1f, 10000.f); //set the projection, we want to be perspective
+
+	// Render the loading screen
+	renderLoadingScreen();
+
+	// Ensure the loading screen stays visible while loading stages
+	SDL_GL_SwapWindow(this->window);
+
+	// Load stages
 	this->manager = new StageManager();
 
 	// OpenGL flags
 	glEnable( GL_CULL_FACE ); //render both sides of every triangle
 	glEnable( GL_DEPTH_TEST ); //check the occlusions using the Z buffer
-
-	// Create our camera
-	camera = new Camera();
-	camera->lookAt(Vector3(0.f,100.f, 100.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
-	camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
@@ -89,6 +94,27 @@ void Game::update(double seconds_elapsed)
 		camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
 		camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
 	}
+}
+
+void Game::renderLoadingScreen()
+{
+	float width = (float)Game::instance->window_width;
+	float height = (float)Game::instance->window_height;
+	Vector2 screen_center = Vector2(0.5f * width, 0.5f * height);
+
+	Material loading_material;
+	loading_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+	loading_material.diffuse = Texture::Get("data/textures/menu/loading_background.tga");
+	
+	EntityUI* loadingscreen = new EntityUI(screen_center, Vector2(width, height), loading_material);
+	loadingscreen->setType(BACKGROUND);
+
+	Camera* orthoCamera = new Camera();
+	orthoCamera->view_matrix = Matrix44();
+	orthoCamera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
+
+	loadingscreen->render(orthoCamera);
+	SDL_GL_SwapWindow(Game::instance->window);
 }
 
 //Keyboard event handler (sync input)

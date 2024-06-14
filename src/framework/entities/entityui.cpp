@@ -17,12 +17,14 @@ EntityUI::EntityUI(const Vector2& position, const Vector2& size, const Material&
 }
 
 bool EntityUI::isHover() {
+    float width = (float)Game::instance->window_width;
+    float height = (float)Game::instance->window_height;
     if (this->type == NONE_BUTTON || this->type == BACKGROUND) return false;
     Vector2 mouse_pos = Input::mouse_position;
-    if (this->position.x - this->width/2.f > mouse_pos.x &&
-        mouse_pos.y > this->position.y - this->height / 2.f &&
-        mouse_pos.x > this->position.x + this->width / 2.f &&
-        this->position.x + this->width / 2.f > mouse_pos.y) {
+    if ((mouse_pos.x > (this->position.x - this->width / 2.f)) &&
+        (mouse_pos.x < (this->position.x + this->width / 2.f)) &&
+        ((height - mouse_pos.y) > (this->position.y - this->height / 2.f)) &&
+        ((height - mouse_pos.y) < (this->position.y + this->height / 2.f))) {
         return true;
     }
 	return false;
@@ -59,7 +61,9 @@ void EntityUI::render(Camera* camera){
 }
 
 void EntityUI::update(float seconds_elapsed) {
-    if (this->isHover()) this->material.diffuse = this->textureOnHover;
+    if (this->isHover()) {
+        this->material.diffuse = this->textureOnHover;
+    }
     else this->material.diffuse = this->regularTexture;
 }
 
@@ -89,6 +93,7 @@ Inventory::Inventory(){
     mat.diffuse = Texture::Get("data/textures/inventory/meat.png");
     this->imgs.push_back(new EntityUI(p, img_size, mat));
 }
+
 void Inventory::render(Camera* camera) {
     for (int i = 0; i < INVENTORY_SIZE; i++) 
         if (this->elements[i]) this->imgs[i]->render(camera);
@@ -123,6 +128,7 @@ MiniMap::MiniMap(){
     mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
     this->background = new EntityUI(p, this->minimap_size, mat);
 }
+
 // Code seen in theory class
 void MiniMap::render(){
     PlayStage* ps = dynamic_cast<PlayStage*>(Game::instance->manager->current);
