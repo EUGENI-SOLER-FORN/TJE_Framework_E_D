@@ -8,6 +8,9 @@ StageManager* StageManager::instance = nullptr;
 
 StageManager::StageManager()
 {
+
+	StageManager::instance = this;
+
 	this->stages["video_intro"] = new VideoStage();
 	this->stages["menu_principal"] = new MenuStage();
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
@@ -17,8 +20,6 @@ StageManager::StageManager()
 
 	PlayStage::current_stage = (PlayStage*)this->stages["island_scene"];
 	PlayStage::player = new EntityPlayer();
-	
-	StageManager::instance = this;
 }
 
 void StageManager::update(float seconds_elapsed) { 
