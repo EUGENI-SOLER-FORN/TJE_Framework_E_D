@@ -82,6 +82,7 @@ public:
 	void updateSceneCamera(float seconds_elapsed);
 
 	void onEnter(Stage* prev_stage) override;
+	void onLeave(Stage* prev_stage) override;
 
 	void render(Camera* camera) override;
 	void update(float seconds_elapsed) override;

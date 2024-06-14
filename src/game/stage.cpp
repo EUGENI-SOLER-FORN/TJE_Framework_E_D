@@ -91,7 +91,8 @@ PlayStage::PlayStage(const char* sceneFile)
 	this->stageCamera->lookAt(camera_eye, camera_center, Vector3::UP);
 	this->stageCamera->setPerspective(60.f, width / (float)height, 0.01f, 1000.f); 
 }
-void PlayStage::onEnter(Stage* prev_stage) { Game::instance->time = 50.f; Game::instance->mouse_locked = true; }
+void PlayStage::onEnter(Stage* prev_stage) { Game::instance->time = 50.f; Game::instance->mouse_locked = true; SDL_ShowCursor(!Game::instance->mouse_locked); }
+void PlayStage::onLeave(Stage* prev_stage) { Game::instance->mouse_locked = false; SDL_ShowCursor(!Game::instance->mouse_locked);}
 
 void PlayStage::updateSceneCamera(float seconds_elapsed){
 	// Code seen in theory class

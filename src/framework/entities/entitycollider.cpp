@@ -131,6 +131,6 @@ EntityDrop::EntityDrop(Mesh* mesh, Material& material) : EntityCollider(mesh, ma
 	Material mat;
 	mat.color = Vector4(0.f, 1.f, 0.f, 1.f);
 	mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
-	this->healthbar = new StatBar(this->health, Vector2(w + 50.f, h), Vector2(25.f, 200.f), mat);
-	this->healthbar->update_stat(this->health);
+	this->healthbar = new StatBar(100.f, Vector2(w + 50.f, h), Vector2(25.f, 200.f), mat);
+	this->healthbar->update_stat(100.f);
 }

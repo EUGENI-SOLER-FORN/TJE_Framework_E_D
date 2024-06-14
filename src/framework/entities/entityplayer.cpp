@@ -117,12 +117,12 @@ void EntityPlayer::update(float seconds_elapsed){
 	}
 	if (grounded && Input::isKeyPressed(SDL_SCANCODE_SPACE)) this->velocity.y = this->player_speed;
 	//DEBUG if falling
-	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) this->velocity.y = 2.0f;
+	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) this->velocity.y = 3.0f;
 	const Vector3& new_position = current_position + this->velocity * seconds_elapsed;
 
 	// Reduce velocity for next frame stopping
 	this->velocity.x *= 0.5f;
-	if(!grounded) this->velocity.y -= 9.8f * seconds_elapsed;
+	if(!grounded && this->position().y > - 10.f) this->velocity.y -= 9.8f * seconds_elapsed;
 	this->velocity.z *= 0.5f;
 
 	// Rotate to look at camera is poining
@@ -217,7 +217,7 @@ void EntityPlayer::render(Camera* camera) {
 		}
 	}
 
-	drawText(w - 150.f, h*2 - 180.f, "DAYS LEFT: " + std::to_string(30-this->days_counter), Vector3(1.f), 2.f);
+	drawText(w - 150.f, h*2 - 175.f, "DAYS LEFT: " + std::to_string(30-this->days_counter), Vector3(1.f), 2.f);
 
 	if (this->sleep_cooldown) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
