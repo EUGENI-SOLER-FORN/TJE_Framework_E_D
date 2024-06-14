@@ -98,7 +98,7 @@ bool World::parseScene(const char* filename, Entity* root)
 		if (tree_tag != std::string::npos) {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
 			// Create a different type of entity
-			mat.diffuse = Texture::Get("data/textures/tree_texture.tga");
+			mat.diffuse = Texture::Get("data/textures/tree_texture.png");
 			mat.color = mat.diffuse ? Vector4(0.9f, 0.9f, 0.9f, 1.0f) : Vector4(0.0f);
 			mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 			new_entity = new EntityDrop(mesh, mat);
@@ -117,7 +117,7 @@ bool World::parseScene(const char* filename, Entity* root)
 			new_entity->name = "House";
 			new_entity->type = HOUSE;
 		} 
-		else if (house_tag != std::string::npos) {
+		else if (boat_tag != std::string::npos) {
 			Mesh* mesh = Mesh::Get(mesh_name.c_str());
 			// Create a different type of entity
 			mat.diffuse = Texture::Get("data/textures/colormap.png");

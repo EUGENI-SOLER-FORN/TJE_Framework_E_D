@@ -91,6 +91,7 @@ PlayStage::PlayStage(const char* sceneFile)
 	this->stageCamera->lookAt(camera_eye, camera_center, Vector3::UP);
 	this->stageCamera->setPerspective(60.f, width / (float)height, 0.01f, 1000.f); 
 }
+void PlayStage::onEnter(Stage* prev_stage) { Game::instance->time = 50.f; Game::instance->mouse_locked = true; }
 
 void PlayStage::updateSceneCamera(float seconds_elapsed){
 	// Code seen in theory class
@@ -109,6 +110,9 @@ void PlayStage::updateSceneCamera(float seconds_elapsed){
 	const Vector3& new_center = new_eye + new_front;
 
 	this->stageCamera->lookAt(new_eye, new_center, Vector3::UP);
+	
+	//move sky
+	this->scene->sky->model.setTranslation(new_eye);
 }
 
 void PlayStage::render(Camera* camera){

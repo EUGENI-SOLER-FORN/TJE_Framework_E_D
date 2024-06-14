@@ -12,7 +12,7 @@ public:
 
 	World(const char* sceneFile);
 	
-	static const int days_length = 300;
+	static const int days_length = 200;
 	Entity* root;
 	EntityDrop* boat = nullptr;
 	static EntityMesh* sky;

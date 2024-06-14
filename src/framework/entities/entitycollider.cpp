@@ -61,7 +61,6 @@ void EntityDrop::hit(){
 		this->changeVisibility();
 		PlayStage::player->inventory->add(WOOD);
 	}
-	std::cout << health <<  std::endl;
 }
 
 void EntityDrop::repair(){
@@ -122,8 +121,8 @@ void EntityDrop::update(float seconds_elapsed){
 		Vector3 clip_space = c->project(this->model.getTranslation(), w, h);
 		this->healthbar->position.x = clip_space.x;
 		this->healthbar->position.y = clip_space.y;
-		this->healthbar->update_stat(this->health);
 	}
+	this->healthbar->update_stat(this->health * 100.f);
 };
 
 EntityDrop::EntityDrop(Mesh* mesh, Material& material) : EntityCollider(mesh, material) {
@@ -133,4 +132,5 @@ EntityDrop::EntityDrop(Mesh* mesh, Material& material) : EntityCollider(mesh, ma
 	mat.color = Vector4(0.f, 1.f, 0.f, 1.f);
 	mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/statbar.fs");
 	this->healthbar = new StatBar(this->health, Vector2(w + 50.f, h), Vector2(25.f, 200.f), mat);
+	this->healthbar->update_stat(this->health);
 }

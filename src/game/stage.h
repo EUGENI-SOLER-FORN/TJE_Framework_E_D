@@ -22,7 +22,7 @@ public:
 	Camera* stageCamera;
 	float camera_yaw = 0.f;
 	float camera_pitch = 0.f;
-	float camera_speed = 2.f;
+	float camera_speed = 1.5f;
 
 	virtual void render(Camera* camera) {};
 	virtual void update(float seconds_elapsed) {};
@@ -80,6 +80,8 @@ public:
 	
 	World* scene;
 	void updateSceneCamera(float seconds_elapsed);
+
+	void onEnter(Stage* prev_stage) override;
 
 	void render(Camera* camera) override;
 	void update(float seconds_elapsed) override;
