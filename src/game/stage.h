@@ -17,12 +17,8 @@ public:
 	Camera* stageCamera = new Camera();
 	float camera_yaw = 0.f;
 	float camera_pitch = 0.f;
-<<<<<<< Updated upstream
 	float camera_speed = 1.5f;
-=======
-	float camera_speed = 3.f;
 	bool go_to_next_stage = false;
->>>>>>> Stashed changes
 
 	virtual void render(Camera* camera) {};
 	virtual void update(float seconds_elapsed) {};
@@ -105,12 +101,7 @@ public:
 	void updateSceneCamera(float seconds_elapsed);
 
 	void onEnter(Stage* prev_stage) override;
-<<<<<<< Updated upstream
 	void onLeave(Stage* prev_stage) override;
-
-=======
-	void onLeave(Stage* next_stage) override;
->>>>>>> Stashed changes
 	void render(Camera* camera) override;
 	void update(float seconds_elapsed) override;
 };

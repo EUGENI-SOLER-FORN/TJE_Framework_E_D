@@ -6,21 +6,11 @@ PlayStage* PlayStage::current_stage = nullptr;
 EntityPlayer* PlayStage::player = nullptr;
 StageManager* StageManager::instance = nullptr;
 
-<<<<<<< Updated upstream
-StageManager::StageManager() {
-	// TODO: create loading screen
-	// this->stages["loading"] = new LoadingStage();
-	
-=======
 StageManager::StageManager()
 {
 	this->stages["video_intro"] = new VideoStage();
->>>>>>> Stashed changes
 	this->stages["menu_principal"] = new MenuStage();
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
-
-	// TODO: create outro/restart stage
-	// this->stages["final"] = new PlayStage("data/scenes/island_scene.scene");
 
 	this->current = this->stages["video_intro"];
 	this->goTo(this->stages["video_intro"]);
@@ -102,6 +92,8 @@ void VideoStage::render(Camera* camera)
 
 void VideoStage::update(float seconds_elapsed)
 {
+	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) StageManager::instance->goTo("island_scene"); //provisional
+	
 	if (current_frame < (num_frames/4)-1)
 	{
 		current_frame = current_frame + 1;
@@ -110,7 +102,7 @@ void VideoStage::update(float seconds_elapsed)
 		go_to_next_stage = true;
 		video_audio->Stop(video_sound);
 	}
-	for (int i = 0; i < 270000000; ++i) {}
+	for (int i = 0; i < 260000000; ++i) {}
 }
 
 void VideoStage::onEnter(Stage* prev_stage) {
@@ -173,11 +165,9 @@ void MenuStage::render(Camera* camera) {
 }
 
 void MenuStage::update(float seconds_elapsed) {
-<<<<<<< Updated upstream
-	// TODO: give sense, see if the mouse is inside rectangle, give color, see if it is clicked inside (onButtonPressed)
-	// provisional
-	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) StageManager::instance->goTo("island_scene");
-=======
+
+	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) StageManager::instance->goTo("island_scene"); //provisional
+
 	playbutton->update(seconds_elapsed);
 	exitbutton->update(seconds_elapsed);
 	background->update(seconds_elapsed);
@@ -212,7 +202,6 @@ void MenuStage::onEnter(Stage* prev_stage) {
 
 void MenuStage::onLeave(Stage* next_stage) {
 	// menu_audio->Stop(menu_sound);
->>>>>>> Stashed changes
 }
 
 MenuStage::~MenuStage(){
