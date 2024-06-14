@@ -223,8 +223,19 @@ PlayStage::PlayStage(const char* sceneFile)
 	this->stageCamera->lookAt(camera_eye, camera_center, Vector3::UP);
 	this->stageCamera->setPerspective(60.f, width / (float)height, 0.01f, 1000.f); 
 }
-void PlayStage::onEnter(Stage* prev_stage) { Game::instance->time = 50.f; Game::instance->mouse_locked = true; SDL_ShowCursor(!Game::instance->mouse_locked); }
-void PlayStage::onLeave(Stage* prev_stage) { Game::instance->mouse_locked = false; SDL_ShowCursor(!Game::instance->mouse_locked);}
+void PlayStage::onEnter(Stage* prev_stage) { 
+	play_audio->Init();
+	play_audio->Get("data/audio/play_audio.wav");
+	play_sound = play_audio->Play("data/audio/play_audio.wav", 1.0, true);
+	Game::instance->time = 50.f; 
+	Game::instance->mouse_locked = true; 
+	SDL_ShowCursor(!Game::instance->mouse_locked); 
+}
+
+void PlayStage::onLeave(Stage* prev_stage) { 
+	Game::instance->mouse_locked = false; 
+	SDL_ShowCursor(!Game::instance->mouse_locked);
+}
 
 void PlayStage::updateSceneCamera(float seconds_elapsed){
 	// Code seen in theory class
@@ -266,14 +277,4 @@ void PlayStage::update(float seconds_elapsed){
 	this->scene->update(seconds_elapsed);
 	PlayStage::player->update(seconds_elapsed); 
 	this->updateSceneCamera(seconds_elapsed);
-}
-
-void PlayStage::onEnter(Stage* prev_stage) {
-	play_audio->Init();
-	play_audio->Get("data/audio/play_audio.wav");
-	play_sound = play_audio->Play("data/audio/play_audio.wav", 1.0, true);
-}
-
-void PlayStage::onLeave(Stage* next_stage) {
-	// play_audio->Stop(play_sound);
 }
