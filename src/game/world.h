@@ -21,7 +21,9 @@ public:
 
 	static void changeSky(float s) {
 		World::sky->material.diffuse = night_sky;
-		if (25.f < s && s < 75.f) World::sky->material.diffuse = day_sky;
+		if (25.f < s && s < 75.f) {
+			World::sky->material.diffuse = day_sky;
+		}
 	};
 
 	bool parseScene(const char* filename, Entity* root);

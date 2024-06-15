@@ -11,7 +11,7 @@ StageManager::StageManager()
 
 	StageManager::instance = this;
 
-	this->stages["video_intro"] = new VideoStage();
+	this->stages["video_intro"] = new MenuStage();
 	this->stages["menu_principal"] = new MenuStage();
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
 
@@ -93,17 +93,31 @@ void VideoStage::render(Camera* camera)
 
 void VideoStage::update(float seconds_elapsed)
 {
-	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) StageManager::instance->goTo("island_scene"); //provisional
-	
-	if (current_frame < (num_frames/4)-1)
+	// Avanzar solo si no se ha terminado el video
+	if (!go_to_next_stage)
 	{
-		current_frame = current_frame + 1;
+		// Calcula el tiempo transcurrido desde el último frame
+		static float accumulated_time = 0.0f;
+		accumulated_time += seconds_elapsed;
+
+		// Define el tiempo necesario para avanzar un frame
+		const float frame_duration = 0.133333f; // Suponiendo que cada frame debe durar 0.04 segundos (25 fps)
+
+		while (accumulated_time >= frame_duration)
+		{
+			// Avanza al siguiente frame
+			if (current_frame < (num_frames / 4) - 1)
+			{
+				current_frame++;
+			}
+			else
+			{
+				go_to_next_stage = true;
+				video_audio->Stop(video_sound);
+			}
+			accumulated_time -= frame_duration; // Ajusta el tiempo acumulado
+		}
 	}
-	else {
-		go_to_next_stage = true;
-		video_audio->Stop(video_sound);
-	}
-	for (int i = 0; i < 260000000; ++i) {}
 }
 
 void VideoStage::onEnter(Stage* prev_stage) {
@@ -198,7 +212,7 @@ void MenuStage::onButtonPressed(eButtonId buttonID) {
 void MenuStage::onEnter(Stage* prev_stage) {
 	menu_audio->Init();
 	menu_audio->Get("data/audio/menu_audio.wav");
-	menu_sound = menu_audio->Play("data/audio/menu_audio.wav", 0.5, true);
+	menu_sound = menu_audio->Play("data/audio/menu_audio.wav", 0.3, true);
 }
 
 void MenuStage::onLeave(Stage* next_stage) {
@@ -225,9 +239,6 @@ PlayStage::PlayStage(const char* sceneFile)
 	this->stageCamera->setPerspective(60.f, width / (float)height, 0.01f, 1000.f); 
 }
 void PlayStage::onEnter(Stage* prev_stage) { 
-	play_audio->Init();
-	play_audio->Get("data/audio/play_audio.wav");
-	play_sound = play_audio->Play("data/audio/play_audio.wav", 1.0, true);
 	Game::instance->time = 50.f; 
 	Game::instance->mouse_locked = true; 
 	SDL_ShowCursor(!Game::instance->mouse_locked); 

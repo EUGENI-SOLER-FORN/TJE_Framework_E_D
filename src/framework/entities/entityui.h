@@ -1,5 +1,6 @@
 #pragma once
 #include "framework/entities/entitymesh.h"
+#include "framework/audio.h"
 #include <algorithm>
 
 enum eButtonId {
@@ -111,8 +112,14 @@ public:
 		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
 		this->icon = new EntityUI(this->position + Vector2(0.f, 0.0125f*this->height ), Vector2(this->height - 0.125f * this->height), mat);
 	};
+	~TimeBar();
+
 	Texture* day_icon;
 	Texture* night_icon;
+	Audio* day_audio;
+	Audio* night_audio;
+	HCHANNEL day_channel;
+	HCHANNEL night_channel;
 
 	void render(Camera* camera) override;
 	void update_stat(float s);

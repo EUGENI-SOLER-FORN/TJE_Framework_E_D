@@ -221,7 +221,7 @@ void EntityPlayer::render(Camera* camera) {
 
 	if (this->sleep_cooldown) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		drawText(w - 40.f, h, "REST A BIT AND KEEP REPAIRING!", Vector3(1.f), 3.f);
+		drawText(w - 240.f, h, "REST A BIT AND KEEP REPAIRING!", Vector3(1.f), 3.f);
 	}
 }
 

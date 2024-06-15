@@ -39,9 +39,6 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	// Render the loading screen
 	renderLoadingScreen();
 
-	// Ensure the loading screen stays visible while loading stages
-	SDL_GL_SwapWindow(this->window);
-
 	// Load stages
 	this->manager = new StageManager();
 
@@ -51,6 +48,9 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
 	// Hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
+
+	// Stop loading audio
+	loading_audio->Stop(loading_sound);
 }
 
 //what to do when the image has to be draw
@@ -114,7 +114,11 @@ void Game::renderLoadingScreen()
 	orthoCamera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
 
 	loadingscreen->render(orthoCamera);
-	SDL_GL_SwapWindow(Game::instance->window);
+	SDL_GL_SwapWindow(this->window);
+
+	loading_audio->Init();
+	loading_audio->Get("data/audio/loading_audio.wav");
+	loading_sound = loading_audio->Play("data/audio/loading_audio.wav", 0.5, true);
 }
 
 //Keyboard event handler (sync input)

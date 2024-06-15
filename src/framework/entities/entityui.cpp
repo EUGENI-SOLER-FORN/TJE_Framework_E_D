@@ -220,9 +220,22 @@ void TimeBar::update_stat(float s) {
     float actual_width = this->width * this->stat;
     if (!this->icon) return;
     
-    this->icon->regularTexture = this->night_icon;
-    if (.75f > this->stat && this->stat > .25f) this->icon->regularTexture = this->day_icon;
-    
+    if (.75f > this->stat && this->stat > .25f) {
+        std::cout << "DAY";
+        night_audio->Stop(night_channel);
+        day_audio->Init();
+        day_audio->Get("data/audio/day_audio.wav");
+        day_channel = day_audio->Play("data/audio/day_audio.wav", 1.0, true);
+        this->icon->regularTexture = this->day_icon;
+    }
+    else {
+        std::cout << "NIGHT";
+        day_audio->Stop(day_channel);
+        night_audio->Init();
+        night_audio->Get("data/audio/night_audio.wav");
+        night_channel = night_audio->Play("data/audio/night_audio.wav", 1.0, true);
+        this->icon->regularTexture = this->night_icon;
+    }
     
     this->icon->position.x = (this->position.x - this->width/ 2.f) + actual_width;
     this->icon->position.y = this->position.y + 0.0125f * this->height;
@@ -250,4 +263,9 @@ void TimeBar::render(Camera* camera) {
     //Restore flags
     glEnable(GL_CULL_FACE);
     glDisable(GL_BLEND);
+}
+
+TimeBar::~TimeBar() {
+    delete day_audio;
+    delete night_audio;
 }

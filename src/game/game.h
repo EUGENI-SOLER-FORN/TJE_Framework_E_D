@@ -30,6 +30,10 @@ public:
 	Camera* camera; //our global camera
 	bool mouse_locked; //tells if the mouse is locked (not seen)
 
+	//audio for loading screen
+	Audio* loading_audio;
+	HCHANNEL loading_sound;
+
 	//stages
 	StageManager* manager = nullptr;
 

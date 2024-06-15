@@ -92,8 +92,6 @@ public:
 	PlayStage(const char* sceneFile);
 	~PlayStage() { delete this->scene; };
 
-	Audio* play_audio;
-	HCHANNEL play_sound;
 	static PlayStage* current_stage;
 	static EntityPlayer* player;
 	
