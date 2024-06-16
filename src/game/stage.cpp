@@ -11,7 +11,7 @@ StageManager::StageManager()
 
 	StageManager::instance = this;
 
-	this->stages["video_intro"] = new VideoStage();
+	this->stages["video_intro"] = new MenuStage();
 	this->stages["menu_principal"] = new MenuStage();
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
 

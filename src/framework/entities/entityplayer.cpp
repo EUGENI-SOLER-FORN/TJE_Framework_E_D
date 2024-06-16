@@ -139,13 +139,29 @@ void EntityPlayer::update(float seconds_elapsed){
 				if (Input::wasKeyPressed(SDL_SCANCODE_F) && this->player_sleepiness > 10.f) {
 					this->player_sleepiness -= 10.f;
 					this->pointingAt->hit();
+					Audio* cut_tree;
+					cut_tree->Init();
+					cut_tree->Get("data/audio/cuttree_audio.wav");
+					cut_tree->Play("data/audio/cuttree_audio.wav", 1.0, true);
 				}
 				break;
 			case HOUSE:
-				if (Input::wasKeyPressed(SDL_SCANCODE_F)) this->sleep();
+				if (Input::wasKeyPressed(SDL_SCANCODE_F)) {
+					this->sleep();
+					Audio* sleep;
+					sleep->Init();
+					sleep->Get("data/audio/sleep_audio.wav");
+					sleep->Play("data/audio/sleep_audio.wav", 1.0, true);
+				}
 				break;
 			case BOAT:
-				if (Input::wasKeyPressed(SDL_SCANCODE_F)) this->pointingAt->repair();
+				if (Input::wasKeyPressed(SDL_SCANCODE_F)) {
+					this->pointingAt->repair();
+					Audio* repair;
+					repair->Init();
+					repair->Get("data/audio/repair_audio.wav");
+					repair->Play("data/audio/repair_audio.wav", 1.0, true);
+				}
 				break;
 		}
 	}
