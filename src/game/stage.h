@@ -4,6 +4,7 @@
 #include "framework/input.h"
 #include "framework/audio.h"
 #include <map>
+#include <vector>
 #include <string>
 
 class Stage{
@@ -23,6 +24,7 @@ public:
 
 	virtual void render(Camera* camera) {};
 	virtual void update(float seconds_elapsed) {};
+	virtual void setBackground(int d) {};
 };
 
 class StageManager
@@ -37,7 +39,7 @@ public:
 
 	static void goTo(const std::string stageName) { 
 		Stage* next_stage = StageManager::instance->stages[stageName]; 
-		StageManager::goTo(next_stage); 
+		StageManager::goTo(next_stage);
 	};
 	static void goTo(Stage* next_stage) { 
 		if (!next_stage) return; 
@@ -68,8 +70,7 @@ public:
 	void update(float seconds_elapsed) override; 
 };
 
-class MenuStage : public Stage
-{
+class MenuStage : public Stage {
 public:
 	MenuStage();
 	~MenuStage();
@@ -86,9 +87,43 @@ public:
 	void render(Camera* camera) override;
 	void update(float seconds_elapsed) override;
 };
+class GameOverStage : public Stage {
+public:
+	GameOverStage();
+	EntityUI* background;
+	EntityUI* restartbutton;
+	EntityUI* exitbutton;
 
-class PlayStage : public Stage
-{
+	EntityUI* score_digit_1 = nullptr;
+	EntityUI* score_digit_2 = nullptr;
+	std::vector<Texture*> numbers;
+	
+	bool win = false;
+	
+	void setBackground(int score) override;
+	void onButtonPressed(eButtonId buttonID);
+
+	void update(float seconds_elapsed) override;
+	void render(Camera* camera) override { 
+		this->restartbutton->render(camera);
+		this->exitbutton->render(camera);
+		
+		if (this->win) this->score_digit_1->render(camera);
+		if (this->win) this->score_digit_2->render(camera);
+
+		this->background->render(camera);
+	};
+
+	~GameOverStage() { 
+		delete score_digit_1; 
+		delete score_digit_2;
+		delete background;
+		delete restartbutton;
+		delete exitbutton;
+	};
+};
+
+class PlayStage : public Stage {
 public:
 	PlayStage(const char* sceneFile);
 	~PlayStage() { delete this->scene; };
@@ -102,5 +137,18 @@ public:
 	void onEnter(Stage* prev_stage) override;
 	void onLeave(Stage* prev_stage) override;
 	void render(Camera* camera) override;
+	void reset() {
+		PlayStage::player->days_counter = 0;
+		PlayStage::player->model.setTranslation(PlayStage::player->player_height + Vector3(34.5f, 0.5f, 7.5f));
+		for (int i = 0; PlayStage::player->inventory->elements.size() > i; i++) PlayStage::player->inventory->elements[i] = 0;
+		PlayStage::player->player_hunger = 100.f;
+		PlayStage::player->player_sleepiness = 100.f;
+		for (Entity* e : this->scene->root->children) {
+			EntityDrop* entity_drop = dynamic_cast<EntityDrop*>(e);
+			if (!entity_drop) continue;
+			if (entity_drop->type == BOAT) entity_drop->health = 0.1f;
+			else if (entity_drop->type == TREE) entity_drop->health = 100.f;
+		}
+	}
 	void update(float seconds_elapsed) override;
 };

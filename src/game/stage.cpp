@@ -6,14 +6,14 @@ PlayStage* PlayStage::current_stage = nullptr;
 EntityPlayer* PlayStage::player = nullptr;
 StageManager* StageManager::instance = nullptr;
 
-StageManager::StageManager()
-{
+StageManager::StageManager() {
 
 	StageManager::instance = this;
 
-	this->stages["video_intro"] = new MenuStage();
+	this->stages["video_intro"] = new VideoStage();
 	this->stages["menu_principal"] = new MenuStage();
 	this->stages["island_scene"] = new PlayStage("data/scenes/island_scene.scene");
+	this->stages["game_over"] = new GameOverStage();
 
 	this->current = this->stages["video_intro"];
 	this->goTo(this->stages["video_intro"]);
@@ -45,9 +45,7 @@ StageManager::~StageManager(){
 	for (auto s : this->stages) { delete s.second; }
 }
 
-VideoStage::VideoStage() 
-{
-
+VideoStage::VideoStage() {
 	this->stageCamera = new Camera();
 	this->stageCamera->view_matrix = Matrix44();
 	this->stageCamera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
@@ -55,32 +53,28 @@ VideoStage::VideoStage()
 	Vector2 position = Vector2(0.5f * Game::instance->window_width, 0.5f * Game::instance->window_height);
 	Vector2 size = Vector2((float)Game::instance->window_width, (float)Game::instance->window_height);
 
-	for (int i = 4; i < 10; i+=4)
-	{
+	for (int i = 4; i < 10; i+=4) {
 		Material mat;
 		std::string frame_path = "data/video/frames_png/frame_000" + std::to_string(i) + ".png"; 
 		mat.diffuse = Texture::Get(frame_path.c_str());
 		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
 		video_frames.push_back(new EntityUI(position, size, mat));
 	}
-	for (int i = 12; i < 100; i+=4)
-	{
+	for (int i = 12; i < 100; i+=4) {
 		Material mat;
 		std::string frame_path = "data/video/frames_png/frame_00" + std::to_string(i) + ".png";
 		mat.diffuse = Texture::Get(frame_path.c_str());
 		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
 		video_frames.push_back(new EntityUI(position, size, mat));
 	}
-	for (int i = 100; i < 1000; i+=4)
-	{
+	for (int i = 100; i < 1000; i+=4) {
 		Material mat;
 		std::string frame_path = "data/video/frames_png/frame_0" + std::to_string(i) + ".png";
 		mat.diffuse = Texture::Get(frame_path.c_str());
 		mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
 		video_frames.push_back(new EntityUI(position, size, mat));
 	}
-	for (int i = 1000; i <= num_frames; i+=4)
-	{
+	for (int i = 1000; i <= num_frames; i+=4) {
 		Material mat;
 		std::string frame_path = "data/video/frames_png/frame_" + std::to_string(i) + ".png";
 		mat.diffuse = Texture::Get(frame_path.c_str());
@@ -89,16 +83,13 @@ VideoStage::VideoStage()
 	}
 }
 
-void VideoStage::render(Camera* camera)
-{
+void VideoStage::render(Camera* camera) {
 	video_frames[current_frame]->render(camera);
 }
 
-void VideoStage::update(float seconds_elapsed)
-{
+void VideoStage::update(float seconds_elapsed) {
 	// Avanzar solo si no se ha terminado el video
-	if (!go_to_next_stage)
-	{
+	if (!go_to_next_stage){
 		// Calcula el tiempo transcurrido desde el último frame
 		static float accumulated_time = 0.0f;
 		accumulated_time += seconds_elapsed;
@@ -106,15 +97,12 @@ void VideoStage::update(float seconds_elapsed)
 		// Define el tiempo necesario para avanzar un frame
 		const float frame_duration = 0.133333f; // Suponiendo que cada frame debe durar 0.04 segundos (25 fps)
 
-		while (accumulated_time >= frame_duration)
-		{
+		while (accumulated_time >= frame_duration) {
 			// Avanza al siguiente frame
-			if (current_frame < (num_frames / 4) - 1)
-			{
+			if (current_frame < (num_frames / 4) - 1) {
 				current_frame++;
 			}
-			else
-			{
+			else {
 				go_to_next_stage = true;
 				video_audio->Stop(video_sound);
 			}
@@ -133,17 +121,14 @@ void VideoStage::onLeave(Stage* next_stage) {
 	// video_audio->Stop(video_sound);
 }
 
-VideoStage::~VideoStage()
-{
-	for (auto frame : video_frames)
-	{
+VideoStage::~VideoStage() {
+	for (auto frame : video_frames) {
 		delete frame;
 	}
 	video_frames.clear();
 }
 
 MenuStage::MenuStage() {
-
 	this->stageCamera = new Camera();
 	this->stageCamera->view_matrix = Matrix44();
 	this->stageCamera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
@@ -171,9 +156,6 @@ MenuStage::MenuStage() {
 	exitbutton = new EntityUI(Vector2(550.0f, 70.0f), Vector2(200.0f, 80.0f), exit_material);
 	exitbutton->setHoverTexture(Texture::Get("data/textures/menu/exit2.tga"));
 	exitbutton->setType(EXIT_BUTTON);
-
-	background->addChild(playbutton);
-	background->addChild(exitbutton);
 }
 
 void MenuStage::render(Camera* camera) {
@@ -183,9 +165,6 @@ void MenuStage::render(Camera* camera) {
 }
 
 void MenuStage::update(float seconds_elapsed) {
-
-	if (Input::isKeyPressed(SDL_SCANCODE_TAB)) StageManager::instance->goTo("island_scene"); //provisional
-
 	playbutton->update(seconds_elapsed);
 	exitbutton->update(seconds_elapsed);
 	background->update(seconds_elapsed);
@@ -228,8 +207,44 @@ MenuStage::~MenuStage(){
 	delete exitbutton;
 }
 
-PlayStage::PlayStage(const char* sceneFile)
-{
+GameOverStage::GameOverStage() : Stage() {
+		this->stageCamera = new Camera();
+		this->stageCamera->view_matrix = Matrix44();
+		this->stageCamera->setOrthographic(0.f, (float)Game::instance->window_width, 0.f, (float)Game::instance->window_height, -1.f, 1.f);
+		float width = (float)Game::instance->window_width;
+		float height = (float)Game::instance->window_height;
+		Vector2 screen_center = Vector2(0.5f * width, 0.5f * height);
+		Material bckg_material;
+		bckg_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		bckg_material.diffuse = Texture::Get("data/textures/menu/gameover_loose_background.png");
+		this->background = new EntityUI(Vector2(width/2.f, height/2.f), Vector2(width, height), bckg_material);
+		this->background->setHoverTexture(Texture::Get("data/textures/menu/gameover_win_background.png"));
+		Material play_material;
+		play_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		play_material.diffuse = Texture::Get("data/textures/menu/restart2.tga");
+		restartbutton = new EntityUI(Vector2(250.0f, 70.0f), Vector2(200.0f, 80.0f), play_material);
+		restartbutton->setHoverTexture(Texture::Get("data/textures/menu/restart1.tga"));
+		restartbutton->setType(RESET_BUTTON);
+		Material exit_material;
+		exit_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		exit_material.diffuse = Texture::Get("data/textures/menu/exit.tga");
+		exitbutton = new EntityUI(Vector2(550.0f, 70.0f), Vector2(200.0f, 80.0f), exit_material);
+		exitbutton->setHoverTexture(Texture::Get("data/textures/menu/exit2.tga"));
+		exitbutton->setType(EXIT_BUTTON);
+
+		for (int i = 0; 10 > i; i++) {
+			std::string num_path = "data/textures/menu/" + std::to_string(i) + ".png";
+			this->numbers.push_back(Texture::Get(num_path.c_str()));
+		}
+
+		Material digit_material;
+		digit_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+		digit_material.diffuse = this->numbers[0];
+		this->score_digit_1 = new EntityUI(Vector2(width-150, height/2.f - 110.f), Vector2(75.0f), digit_material);
+		this->score_digit_2 = new EntityUI(Vector2(width-75, height / 2.f - 110.f), Vector2(75.0f), digit_material);
+}
+
+PlayStage::PlayStage(const char* sceneFile) {
 	this->scene = new World(sceneFile);
 	this->stageCamera = new Camera();
 
@@ -241,6 +256,7 @@ PlayStage::PlayStage(const char* sceneFile)
 	this->stageCamera->lookAt(camera_eye, camera_center, Vector3::UP);
 	this->stageCamera->setPerspective(60.f, width / (float)height, 0.01f, 1000.f); 
 }
+
 void PlayStage::onEnter(Stage* prev_stage) { 
 	Game::instance->time = 50.f; 
 	Game::instance->mouse_locked = true; 
@@ -276,7 +292,6 @@ void PlayStage::updateSceneCamera(float seconds_elapsed){
 
 void PlayStage::render(Camera* camera){
 	if (PlayStage::player->sleep_cooldown) {
-		
 		PlayStage::player->render(camera);
 		return;
 	}
@@ -285,13 +300,13 @@ void PlayStage::render(Camera* camera){
 }
 
 void PlayStage::update(float seconds_elapsed){
-	if (PlayStage::player->sleep_cooldown) {
-		PlayStage::player->update(seconds_elapsed);
-		return;
+	PlayStage::player->update(seconds_elapsed);
+
+	if (PlayStage::player->sleep_cooldown) return;
+	if (!PlayStage::player->menu_game->display_menu) {
+		this->scene->update(seconds_elapsed);
+		this->updateSceneCamera(seconds_elapsed);
 	}
-	this->scene->update(seconds_elapsed);
-	PlayStage::player->update(seconds_elapsed); 
-	this->updateSceneCamera(seconds_elapsed);
 
 	if (PlayStage::player->menu_game->go_menu == true) {
 		go_menu = true;
@@ -303,7 +318,58 @@ void PlayStage::update(float seconds_elapsed){
 			PlayStage::player->timebar->day_audio->Stop(PlayStage::player->timebar->day_channel);
 			PlayStage::player->timebar->is_day_audio = false;
 		}
-
 	}
 	PlayStage::player->menu_game->go_menu = false;
+}
+
+void GameOverStage::setBackground(int score){
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (this->background == nullptr) return;
+	
+	this->background->regularTexture = Texture::Get("data/textures/menu/gameover_win_background.png");
+	this->win = true;
+	this->restartbutton->position = Vector2(250.f, 70.f);
+	this->exitbutton->position = Vector2(550.f, 70.f);
+	
+	if (score == 30) {
+		this->background->regularTexture = Texture::Get("data/textures/menu/gameover_loose_background.png");
+		this->score_digit_1->changeVisibility();
+		this->score_digit_2->changeVisibility();
+		this->restartbutton->position.y += 100.f;
+		this->exitbutton->position.y += 100.f;
+		this->win = false;
+	}
+
+	this->restartbutton->updateMesh();
+	this->exitbutton->updateMesh();
+
+	this->score_digit_1->regularTexture = this->numbers[score / 10];
+	this->score_digit_2->regularTexture = this->numbers[score % 10];
+}
+
+void GameOverStage::onButtonPressed(eButtonId buttonID) {
+	switch (buttonID) {
+	case EXIT_BUTTON:
+		exit(0);
+		break;
+	case RESET_BUTTON:
+		PlayStage::current_stage->reset();
+		StageManager::goTo("island_scene");
+	default:
+		break;
+	}
+}
+
+void GameOverStage::update(float seconds_elapsed) {
+	this->restartbutton->update(seconds_elapsed);
+	this->exitbutton->update(seconds_elapsed);
+	this->score_digit_1->update(seconds_elapsed);
+	this->score_digit_2->update(seconds_elapsed);
+	this->background->update(seconds_elapsed);
+	if (this->restartbutton->isHover() && Input::isMousePressed(SDL_BUTTON_LEFT)) {
+		onButtonPressed(this->restartbutton->type);
+	}
+	else if (this->exitbutton->isHover() && Input::isMousePressed(SDL_BUTTON_LEFT)) {
+		onButtonPressed(this->exitbutton->type);
+	}
 }

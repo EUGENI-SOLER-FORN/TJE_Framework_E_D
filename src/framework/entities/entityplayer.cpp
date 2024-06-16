@@ -46,6 +46,8 @@ EntityDrop* EntityPlayer::getEntityPointingAt(Camera* camera) {
 		if (!entity_drop->isVisible) continue;
 		if (entity_drop->mesh->testRayCollision(entity_drop->model, camera->eye, camera_front, col_point, col_normal, 1.5f, false)) {
 			entity_drop->mask = 1.f;
+			entity_drop->healthbar->position = Vector2(Game::instance->window_width, Game::instance->window_height);
+			entity_drop->healthbar->update_stat(entity_drop->health);
 			return entity_drop;
 		}
 	}
@@ -53,20 +55,39 @@ EntityDrop* EntityPlayer::getEntityPointingAt(Camera* camera) {
 }
 
 void EntityPlayer::update(float seconds_elapsed){
+	// lose directly
+	if (Input::isKeyPressed(SDL_SCANCODE_M)) {
+		this->days_counter = 30;
+		StageManager::goTo("game_over");
+		Game::instance->manager->current->setBackground(this->days_counter);
+	}
+	//win directly
+	if (Input::isKeyPressed(SDL_SCANCODE_N)) {
+		this->days_counter = (int)(random() * 20);
+		StageManager::goTo("game_over");
+		Game::instance->manager->current->setBackground(this->days_counter);
+	}
+
 	if (this->sleep_cooldown) {
 		this->sleep_cooldown = clamp(this->sleep_cooldown - seconds_elapsed, 0.f, 3.f);
 		return;
 	}
 
-	// @TODO : create loose and win stage
-	if (this->days_counter == 30) StageManager::goTo("lose_stage");
+	if (this->days_counter == 30) {
+		StageManager::goTo("game_over");
+		Game::instance->manager->current->setBackground(this->days_counter);
+	}
 
 	// Check if we are in a playstage, if not return;
 	PlayStage* ps = dynamic_cast<PlayStage*>(Game::instance->manager->current);
 	if (!ps) return;
 	// @TODO : create loose and win stage
-	if(ps->scene->boat) if (ps->scene->boat->health >= 100.f) StageManager::goTo("win_stage");
-
+	if (ps->scene->boat) {
+		if (ps->scene->boat->health >= 100.f) {
+			StageManager::goTo("game_over");
+			Game::instance->manager->current->setBackground(this->days_counter);
+		}
+	}
 	// Set some variables
 	float moving_speed = this->player_speed;
 	Vector3 moving_direction;
@@ -76,7 +97,7 @@ void EntityPlayer::update(float seconds_elapsed){
 	Vector3 current_position = position();
 
 	// Code adapted from Camera controls given in the framework skeleton
-	if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT)) moving_speed *= 2.f;
+	if (Input::isKeyPressed(SDL_SCANCODE_LSHIFT) && this->player_sleepiness > 10.f) moving_speed *= 2.f;
 	if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP))	moving_direction += player_front;
 	if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN))	moving_direction -= player_front;
 	if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT))	moving_direction += player_right;
@@ -167,7 +188,7 @@ void EntityPlayer::update(float seconds_elapsed){
 	}
 
 	// Update sleep and stamina
-	this->player_sleepiness = clamp(this->player_sleepiness - ((float)this->velocity.length() - 0.4f) * seconds_elapsed, 0.f, 100.f);
+	this->player_sleepiness = clamp(this->player_sleepiness - 0.1f * seconds_elapsed, 0.f, 100.f);
 	this->stamina->update_stat(this->player_sleepiness);
 	this->player_hunger = clamp(this->player_hunger - 0.2f * seconds_elapsed, 0.f, 100.f);
 	this->hunger->update_stat(this->player_hunger);
@@ -176,7 +197,6 @@ void EntityPlayer::update(float seconds_elapsed){
 	float t = (float)((int)Game::instance->time % World::days_length) * 100.f/World::days_length;
 	this->days_counter = (int)Game::instance->time / World::days_length;
 	this->timebar->update_stat(t);
-	std::cout << this->position().x << " " << this->position().y << " " << this->position().z << std::endl;
 
 	this->menu_game->update(seconds_elapsed);
 }
@@ -218,7 +238,6 @@ void EntityPlayer::render(Camera* camera) {
 	this->timebar->render(this->player_camera2D);
 	this->point->render(this->player_camera2D);
 	this->minimap->render();
-	this->menu_game->render(this->player_camera2D);
 
 	float w = (float)Game::instance->window_width / 2.f;
 	float h = (float)Game::instance->window_height / 2.f;
@@ -248,7 +267,7 @@ void EntityPlayer::render(Camera* camera) {
 
 void EntityPlayer::sleep() {
 	sleep_cooldown = 3.f;
-	this->player_sleepiness = std::min(100.0f, this->player_sleepiness + 20.0f);
+	this->player_sleepiness = std::min(100.0f, this->player_sleepiness + 40.0f);
 	this->days_counter += 1;
 	Game::instance->time = this->days_counter * World::days_length;
 }

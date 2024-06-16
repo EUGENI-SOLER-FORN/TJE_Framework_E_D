@@ -10,7 +10,7 @@ enum eButtonId {
 	EXIT_BUTTON,
 	PAUSE_BUTTON,
 	BACKGROUND,
-	HEALTHBAR
+	HEALTHBAR, RESET_BUTTON
 };
 
 class EntityUI : public EntityMesh {
@@ -33,6 +33,7 @@ public:
 
 	void render(Camera* camera) override;
 	void update(float seconds_elapsed) override;
+	void updateMesh();
 };
 
 enum eInventoryElements {

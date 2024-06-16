@@ -66,7 +66,7 @@ void EntityUI::update(float seconds_elapsed) {
     }
     else this->material.diffuse = this->regularTexture;
 }
-
+void EntityUI::updateMesh(){this->mesh->createQuad(this->position.x, this->position.y, this->width, this->height, true);}
 Inventory::Inventory(){
     for (int i = 0; i < INVENTORY_SIZE; i++) this->elements.push_back(0);
     //center hud
@@ -231,7 +231,6 @@ void TimeBar::update_stat(float s) {
             day_channel = day_audio->Play("data/audio/day_audio.wav", 1.0, true);
             is_day_audio = true;
         }
-        std::cout << "DAY";
         this->icon->regularTexture = this->day_icon;
     }
     else {
@@ -245,7 +244,6 @@ void TimeBar::update_stat(float s) {
             night_channel = night_audio->Play("data/audio/night_audio.wav", 1.0, true);
             is_night_audio = true;
         }
-        std::cout << "NIGHT";
         this->icon->regularTexture = this->night_icon;
     }
     
