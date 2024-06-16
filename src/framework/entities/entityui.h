@@ -8,6 +8,7 @@ enum eButtonId {
 	NEXT_BUTTON,
 	PLAY_BUTTON,
 	EXIT_BUTTON,
+	PAUSE_BUTTON,
 	BACKGROUND,
 	HEALTHBAR
 };
@@ -116,6 +117,8 @@ public:
 
 	Texture* day_icon;
 	Texture* night_icon;
+	bool is_day_audio = false;
+	bool is_night_audio = false; 
 	Audio* day_audio;
 	Audio* night_audio;
 	HCHANNEL day_channel;
@@ -123,4 +126,18 @@ public:
 
 	void render(Camera* camera) override;
 	void update_stat(float s);
+};
+
+class MenuGame {
+public:
+	MenuGame();
+	EntityUI* pause;
+	EntityUI* continue_button;
+	EntityUI* exit_button;
+	bool display_menu = false;
+	bool go_menu = false;
+	const Vector2& button_size = Vector2(300.f, 100.f);
+	const Vector2& pause_size = Vector2(60.f);
+	void render(Camera* camera);
+	void update(float seconds_elapsed);
 };

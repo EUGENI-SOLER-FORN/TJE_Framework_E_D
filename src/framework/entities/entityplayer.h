@@ -15,6 +15,7 @@ public:
 		delete stamina;
 		delete hunger;
 		delete timebar;
+		delete menu_game;
 	};
 	
 	// general attributes
@@ -36,6 +37,7 @@ public:
 	StatBar* stamina;
 	StatBar* hunger;
 	TimeBar* timebar;
+	MenuGame* menu_game;
 
 	// methods to manage hunger and sleep
 	void eat() { this->player_hunger = std::min(100.0f, this->player_hunger + 20.0f); };

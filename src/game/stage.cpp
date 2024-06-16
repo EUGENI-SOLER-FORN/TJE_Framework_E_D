@@ -24,14 +24,17 @@ StageManager::StageManager()
 
 void StageManager::update(float seconds_elapsed) { 
 	this->current->update(seconds_elapsed); 
-	if (this->current == this->stages["video_intro"]) {
-		if (this->current->go_to_next_stage == true) {
+	if (this->current == this->stages["video_intro"] || (this->current->go_menu == true)) {
+		if ((this->current->go_to_next_stage == true) || (this->current->go_menu == true)) {
+			this->current->go_to_next_stage = false;
+			this->current->go_menu = false;
 			this->current = this->stages["menu_principal"];
 			this->goTo(this->stages["menu_principal"]);
 		}
 	}
 	else if (this->current == this->stages["menu_principal"]) {
 		if (this->current->go_to_next_stage == true) {
+			this->current->go_to_next_stage = false;
 			this->current = this->stages["island_scene"];
 			this->goTo(this->stages["island_scene"]);
 		}
@@ -289,4 +292,18 @@ void PlayStage::update(float seconds_elapsed){
 	this->scene->update(seconds_elapsed);
 	PlayStage::player->update(seconds_elapsed); 
 	this->updateSceneCamera(seconds_elapsed);
+
+	if (PlayStage::player->menu_game->go_menu == true) {
+		go_menu = true;
+		if (PlayStage::player->timebar->is_night_audio) {
+			PlayStage::player->timebar->night_audio->Stop(PlayStage::player->timebar->night_channel);
+			PlayStage::player->timebar->is_night_audio = false;
+		} 
+		if (PlayStage::player->timebar->is_day_audio) {
+			PlayStage::player->timebar->day_audio->Stop(PlayStage::player->timebar->day_channel);
+			PlayStage::player->timebar->is_day_audio = false;
+		}
+
+	}
+	PlayStage::player->menu_game->go_menu = false;
 }

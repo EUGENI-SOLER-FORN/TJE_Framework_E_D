@@ -221,26 +221,37 @@ void TimeBar::update_stat(float s) {
     if (!this->icon) return;
     
     if (.75f > this->stat && this->stat > .25f) {
+        if (is_night_audio) {
+            night_audio->Stop(night_channel);
+            is_night_audio = false;
+        }
+        else if (!is_day_audio){
+            day_audio->Init();
+            day_audio->Get("data/audio/day_audio.wav");
+            day_channel = day_audio->Play("data/audio/day_audio.wav", 1.0, true);
+            is_day_audio = true;
+        }
         std::cout << "DAY";
-        night_audio->Stop(night_channel);
-        day_audio->Init();
-        day_audio->Get("data/audio/day_audio.wav");
-        day_channel = day_audio->Play("data/audio/day_audio.wav", 1.0, true);
         this->icon->regularTexture = this->day_icon;
     }
     else {
+        if (is_day_audio) {
+            day_audio->Stop(day_channel);
+            is_day_audio = false;
+        }
+        else if (!is_night_audio) {
+            night_audio->Init();
+            night_audio->Get("data/audio/night_audio.wav");
+            night_channel = night_audio->Play("data/audio/night_audio.wav", 1.0, true);
+            is_night_audio = true;
+        }
         std::cout << "NIGHT";
-        day_audio->Stop(day_channel);
-        night_audio->Init();
-        night_audio->Get("data/audio/night_audio.wav");
-        night_channel = night_audio->Play("data/audio/night_audio.wav", 1.0, true);
         this->icon->regularTexture = this->night_icon;
     }
     
     this->icon->position.x = (this->position.x - this->width/ 2.f) + actual_width;
     this->icon->position.y = this->position.y + 0.0125f * this->height;
     this->icon->update(0.f);
-
     World::changeSky(s);
 }
 
@@ -268,4 +279,59 @@ void TimeBar::render(Camera* camera) {
 TimeBar::~TimeBar() {
     delete day_audio;
     delete night_audio;
+}
+
+MenuGame::MenuGame() {
+    float width = (float)Game::instance->window_width;
+    float height = (float)Game::instance->window_height;
+    Vector2 screen_center = Vector2(0.5f * width, 0.5f * height);
+
+    Material pause_mat;
+    pause_mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+    pause_mat.diffuse = Texture::Get("data/textures/menu/pause_black.png");
+    this->pause = new EntityUI(Vector2(760.0f, 560.0f), this->pause_size, pause_mat);
+    this->pause->setHoverTexture(Texture::Get("data/textures/menu/pause_white.png"));
+    this->pause->setType(PAUSE_BUTTON);
+
+    Material continue_button_mat;
+    continue_button_mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+    continue_button_mat.diffuse = Texture::Get("data/textures/menu/continue_1.tga");
+    this->continue_button = new EntityUI(screen_center + Vector2(0.f, 100.0f), this->button_size, continue_button_mat);
+    this->continue_button->setHoverTexture(Texture::Get("data/textures/menu/continue_2.tga"));
+    this->continue_button->setType(PLAY_BUTTON);
+
+    Material exit_button_mat;
+    exit_button_mat.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture2D.fs");
+    exit_button_mat.diffuse = Texture::Get("data/textures/menu/exit.tga");
+    this->exit_button = new EntityUI(screen_center, this->button_size, exit_button_mat);
+    this->exit_button->setHoverTexture(Texture::Get("data/textures/menu/exit2.tga"));
+    this->exit_button->setType(EXIT_BUTTON);
+}
+
+void MenuGame::render(Camera* camera) {
+    this->pause->render(camera);
+    if (display_menu){
+        this->continue_button->render(camera);
+        this->exit_button->render(camera);
+    }
+}
+
+void MenuGame::update(float seconds_elapsed) {
+    this->pause->update(seconds_elapsed);
+
+    if (pause->isHover() && Input::isMousePressed(SDL_BUTTON_LEFT)) {
+        display_menu = true;
+    } 
+
+    if (display_menu == true) {
+        this->continue_button->update(seconds_elapsed);
+        this->exit_button->update(seconds_elapsed);
+        if (continue_button->isHover() && Input::isMousePressed(SDL_BUTTON_LEFT)) {
+            display_menu = false;
+        }
+        if (exit_button->isHover() && Input::isMousePressed(SDL_BUTTON_LEFT)) {
+            go_menu = true;
+            display_menu = false;
+        }
+    }
 }

@@ -19,6 +19,7 @@ public:
 	float camera_pitch = 0.f;
 	float camera_speed = 1.5f;
 	bool go_to_next_stage = false;
+	bool go_menu = false;
 
 	virtual void render(Camera* camera) {};
 	virtual void update(float seconds_elapsed) {};

@@ -9,6 +9,7 @@ EntityPlayer::EntityPlayer() : EntityMesh(){
 	this->inventory = new Inventory();
 	this->point = new PointCross();
 	this->minimap = new MiniMap();
+	this->menu_game = new MenuGame();
 
 	float h = (float)Game::instance->window_height / 2.f;
 	float w = (float)Game::instance->window_width / 2.f;
@@ -160,6 +161,8 @@ void EntityPlayer::update(float seconds_elapsed){
 	this->days_counter = (int)Game::instance->time / World::days_length;
 	this->timebar->update_stat(t);
 	std::cout << this->position().x << " " << this->position().y << " " << this->position().z << std::endl;
+
+	this->menu_game->update(seconds_elapsed);
 }
 
 void EntityPlayer::render(Camera* camera) {
@@ -192,12 +195,14 @@ void EntityPlayer::render(Camera* camera) {
 	//shader->disable();
 	}
 
+	this->menu_game->render(this->player_camera2D);
 	this->hunger->render(this->player_camera2D);
 	this->stamina->render(this->player_camera2D);
 	this->inventory->render(this->player_camera2D);
 	this->timebar->render(this->player_camera2D);
 	this->point->render(this->player_camera2D);
 	this->minimap->render();
+	this->menu_game->render(this->player_camera2D);
 
 	float w = (float)Game::instance->window_width / 2.f;
 	float h = (float)Game::instance->window_height / 2.f;
